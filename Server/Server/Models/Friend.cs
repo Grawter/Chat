@@ -1,6 +1,4 @@
-﻿
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Server.Models
 {
@@ -14,6 +12,5 @@ namespace Server.Models
 
         public int UserId { get; set; }
         public User User { get; set; }  // компания пользователя
-        //public List<User> Users { get; set; } = new List<User>();
     }
 }

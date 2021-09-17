@@ -62,26 +62,24 @@ namespace Client
 
             SendFileItem.Click += delegate // Функционал элемента
             {
-                if (listBox1.SelectedItems.Count == 0)
+                if (listBox1.SelectedItems.Count > 0 && !string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
                 {
-                    return;
-                }
+                    OpenFileDialog dialog = new OpenFileDialog();
+                    dialog.ShowDialog();
 
-                OpenFileDialog dialog = new OpenFileDialog();
-                dialog.ShowDialog();
+                    if (!File.Exists(dialog.FileName))
+                    {
+                        MessageBox.Show($"Файл {dialog.FileName} не найден!");
+                        return;
+                    }
 
-                if (!File.Exists(dialog.FileName))
-                {
-                    MessageBox.Show($"Файл {dialog.FileName} не найден!");
-                    return;
-                }
+                    FileInfo fi = new FileInfo(dialog.FileName);
+                    byte[] buffer = File.ReadAllBytes(dialog.FileName);
 
-                FileInfo fi = new FileInfo(dialog.FileName);
-                byte[] buffer = File.ReadAllBytes(dialog.FileName);
-
-                Send($"#sendfileto|{listBox1.SelectedItem}|{buffer.Length}|{fi.Name}"); // Передача информации о файле
-                Send(buffer); // Передача самого файла
-                MessageBox.Show("Файл загружен");
+                    Send($"#sendfileto|{listBox1.SelectedItem}|{buffer.Length}|{fi.Name}"); // Передача информации о файле
+                    Send(buffer); // Передача самого файла
+                    MessageBox.Show("Файл загружен");
+                }                
             };
 
             contextMenuStrip1.Items.Add(SendFileItem); // Добавить ранее созданного элемента в меню
@@ -90,7 +88,15 @@ namespace Client
 
             DeleteUser.Click += delegate
             {
-
+                if (listBox1.SelectedItems.Count > 0 && !string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
+                {
+                    DialogResult Result = MessageBox.Show($"Удалить {listBox1.SelectedItem}?", "Удаление из контактов", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (Result == DialogResult.Yes)
+                    {
+                        Send($"#delete|{listBox1.SelectedItem}");
+                        listBox1.Items.Remove(listBox1.SelectedItem);
+                    }        
+                }
             };
 
             contextMenuStrip1.Items.Add(DeleteUser);
@@ -99,7 +105,7 @@ namespace Client
 
             BlockUser.Click += delegate
             {
-
+                
             };
 
             contextMenuStrip1.Items.Add(BlockUser);
@@ -112,18 +118,27 @@ namespace Client
 
         private void ChatForm_Load(object sender, EventArgs e) // При загрузке чата
         {
-            IPAddress temp = IPAddress.Parse(_host);
-            _serverSocket = new Socket(temp.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            _serverSocket.Connect(new IPEndPoint(temp, _port));
-
-            if (_serverSocket.Connected)
+            try
             {
-                listenThread = new Thread(listner);
-                listenThread.IsBackground = true;
-                listenThread.Start();
+                IPAddress temp = IPAddress.Parse(_host);
+                _serverSocket = new Socket(temp.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                _serverSocket.Connect(new IPEndPoint(temp, _port));
+
+                if (_serverSocket.Connected)
+                {
+                    listenThread = new Thread(listner);
+                    listenThread.IsBackground = true;
+                    listenThread.Start();
+                }
+                else
+                    MessageBox.Show("Связь с сервером не установлена.");
             }
-            else
+            catch
+            {
                 MessageBox.Show("Связь с сервером не установлена.");
+            }
+
+            
         }
 
         public void listner()
@@ -155,7 +170,7 @@ namespace Client
                 {
                     string currentCommand = commands[i];
 
-                    if (string.IsNullOrEmpty(currentCommand))
+                    if (string.IsNullOrWhiteSpace(currentCommand))
                         continue;
 
                     #region Блок подключения и валидации данных
@@ -164,7 +179,7 @@ namespace Client
                     {
                         Invoke((MethodInvoker)delegate // Обеспечение доступа к элементам формы в потоке, в котором они были созданы
                         {
-                            richTextBox1.Text = "Подключение выполнено!";
+                            textBox3.Text = "Подключение выполнено!";
                             label1.Text = UserName;
 
                         });
@@ -209,7 +224,7 @@ namespace Client
 
                     #endregion
 
-                    #region Блок добавления контактов
+                    #region Блок добавления и удаления контактов 
 
                     if (currentCommand.Contains("userlist")) // Обновление списка друзей
                     {
@@ -261,10 +276,17 @@ namespace Client
                         continue;
                     }
 
-                    if (currentCommand.Contains("addtolist")) // Добавление в пользователя в листбокс
+                    if (currentCommand.Contains("addtolist")) // Добавление пользователя в листбокс
                     {
                         string new_friend = currentCommand.Split('|')[1];
                         listBox1.Invoke((MethodInvoker)delegate { listBox1.Items.Add(new_friend); }); // добавляем пользователя
+                        continue;
+                    }
+
+                    if (currentCommand.Contains("remtolist")) // Удаление пользователя из листбокс
+                    {
+                        string guest = currentCommand.Split('|')[1];
+                        listBox1.Invoke((MethodInvoker)delegate { listBox1.Items.Remove(guest); }); // удаление пользователя
                         continue;
                     }
 
@@ -344,20 +366,20 @@ namespace Client
         #region Блок обработки основных сценариев
         public void Registration() // Регистрация
         {
-            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-                return;
-
-            Send($"#register|{userName}|{email}|{password}");
-            password = "";
+            if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(password))
+            {
+                Send($"#register|{userName}|{email}|{password}");
+                password = "";
+            }     
         }
 
         public void Login() // Логин
         {
-            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
-                return;
-
-            Send($"#login|{userName}|{password}");
-            password = "";
+            if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(password))
+            {
+                Send($"#login|{userName}|{password}");
+                password = "";
+            }
         }
 
         public void Send(byte[] buffer) // Отправить сообщение на сервер в формате массив байт
@@ -396,9 +418,9 @@ namespace Client
                         return;
                     }
 
-                    richTextBox1.SelectionStart = richTextBox1.TextLength;
-                    richTextBox1.SelectionLength = message.Length;
-                    richTextBox1.AppendText($"{from}:{message}" + Environment.NewLine);
+                    textBox3.SelectionStart = textBox3.TextLength;
+                    textBox3.SelectionLength = message.Length;
+                    textBox3.AppendText($"{from}: {message}" + Environment.NewLine);
                 }
             }
         }
@@ -411,10 +433,10 @@ namespace Client
                 return;
             }
 
-            richTextBox1.Clear();
-            richTextBox1.SelectionStart = richTextBox1.TextLength;
-            richTextBox1.SelectionLength = Content.Length;
-            richTextBox1.AppendText(Content + Environment.NewLine);
+            textBox3.Clear();
+            textBox3.SelectionStart = textBox3.TextLength;
+            textBox3.SelectionLength = Content.Length;
+            textBox3.AppendText(Content + Environment.NewLine);
         }
 
         #endregion
@@ -423,44 +445,59 @@ namespace Client
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e) // Выбор адресата
         {
-            textBox2.Enabled = true;
-            button1.Enabled = true;
-            Send($"#getchat|{listBox1.SelectedItem}");
+            if (listBox1.SelectedItem != null)
+            {
+                if (!string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
+                {
+                    textBox2.Enabled = true;
+                    button1.Enabled = true;
+
+                    Send($"#getchat|{listBox1.SelectedItem}");
+                }
+            }                      
         }
 
         private void button1_Click(object sender, EventArgs e) // Отправка сообщения через кнопку
         {
-            string msgData = textBox2.Text;
+            if (listBox1.SelectedItem != null)
+            {
+                if (!string.IsNullOrWhiteSpace(textBox2.Text) && !string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
+                {
+                    string msgData = textBox2.Text;
+                    string to = listBox1.SelectedItem.ToString();
+                    Send($"#message|{to}|{msgData}");
+                }
 
-            if (string.IsNullOrEmpty(msgData) || string.IsNullOrEmpty(listBox1.SelectedItem.ToString()))
-                return;
-
-            string to = listBox1.SelectedItem.ToString();
-            Send($"#message|{to}|{msgData}");
-
-            textBox2.Text = string.Empty;
+                textBox2.Text = string.Empty;
+            }               
         }
 
-        private void textBox2_KeyUp(object sender, KeyEventArgs e) // Отправка сообщения через Enter
+        private void textBox2_KeyUp(object sender, KeyEventArgs e) // Отправка сообщения через Enter       
         {
             if (e.KeyData == Keys.Enter)
             {
-                string msgData = textBox2.Text;
+                if (listBox1.SelectedItem != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(textBox2.Text) && !string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
+                    {
+                        string msgData = textBox2.Text;
+                        string to = listBox1.SelectedItem.ToString();
+                        Send($"#message|{to}|{msgData}");
+                    }
 
-                if (string.IsNullOrEmpty(msgData) || string.IsNullOrEmpty(listBox1.SelectedItem.ToString()))
-                    return;
-
-                string to = listBox1.SelectedItem.ToString();
-                Send($"#message|{to}|{msgData}");
-
-                textBox2.Text = string.Empty;
+                    textBox2.Text = string.Empty;
+                }
             }
         }
 
         private void button2_Click(object sender, EventArgs e) // Найти и добавить по нику
         {
-            string nick = textBox1.Text;
-            Send("#findbynick|" + nick);
+            if(!string.IsNullOrWhiteSpace(textBox1.Text))
+            {
+                string nick = textBox1.Text;
+                Send("#findbynick|" + nick);
+                textBox1.Text = "";
+            }
         }
 
         private void ChatForm_FormClosing_1(object sender, FormClosingEventArgs e) // При закрытии формы

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\termi\\Desktop\\Chat2\\ClientNet\\Client\\Client\\Client.csproj": {}
+    "C:\\Users\\termi\\Desktop\\CliNet\\Client\\Client.csproj": {}
   },
   "projects": {
-    "C:\\Users\\termi\\Desktop\\Chat2\\ClientNet\\Client\\Client\\Client.csproj": {
+    "C:\\Users\\termi\\Desktop\\CliNet\\Client\\Client.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\termi\\Desktop\\Chat2\\ClientNet\\Client\\Client\\Client.csproj",
+        "projectUniqueName": "C:\\Users\\termi\\Desktop\\CliNet\\Client\\Client.csproj",
         "projectName": "Client",
-        "projectPath": "C:\\Users\\termi\\Desktop\\Chat2\\ClientNet\\Client\\Client\\Client.csproj",
+        "projectPath": "C:\\Users\\termi\\Desktop\\CliNet\\Client\\Client.csproj",
         "packagesPath": "C:\\Users\\termi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\termi\\Desktop\\Chat2\\ClientNet\\Client\\Client\\obj\\",
+        "outputPath": "C:\\Users\\termi\\Desktop\\CliNet\\Client\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\termi\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -57,7 +57,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.400\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     }

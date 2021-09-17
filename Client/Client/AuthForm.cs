@@ -26,7 +26,7 @@ namespace Client
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (textBox2.Text == "" || textBox1.Text == "")
+            if (string.IsNullOrWhiteSpace(textBox2.Text) || string.IsNullOrWhiteSpace(textBox1.Text))
             {
                 label3.Text = "Заполните пустые поля!";
                 return;

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "8Putc3G1hWxTayovkHsz/0yxkClrAQNcF1bhOe4afMJO2O9gpgKMqqjMkpW1S+upy6/dRaf7PxGprwlmAqNkZw==",
+  "dgSpecHash": "TYE+6GSplK4M+KJdHDOWlnrYTVGuo7mF/O3efjutYUtUyLv+LlT22/5Em6iXFsbTmbZShON/yv5kL9eZSdkFQg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\termi\\Desktop\\Chat2\\ClientNet\\Client\\Client\\Client.csproj",
+  "projectFilePath": "C:\\Users\\termi\\Desktop\\CliNet\\Client\\Client.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
