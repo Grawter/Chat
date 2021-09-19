@@ -11,6 +11,6 @@ namespace Server.Models
         public string Key { get; set; }
 
         public int UserId { get; set; }
-        public User User { get; set; }  // компания пользователя
+        public User User { get; set; }  
     }
 }

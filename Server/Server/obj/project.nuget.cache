@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "y2c5iIB5PWwNT18f6R8Xu3F7Pmue7dOoaE6ptZfN+QyhGG5xARfo6+44EtWnBuLpmMLzsPSZ5gBPHnDe9ANCLg==",
+  "dgSpecHash": "AcXyb0p9/VfNKIpeZ8m6kKH3JP7Cc/cmb11+rnZwgPgGUKcIqR1MKyJk75pgDLEGmETcpkPvftmEsxxyXwhrGw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\termi\\Desktop\\Serv\\Server\\Server.csproj",
+  "projectFilePath": "C:\\Users\\termi\\Desktop\\MainChat\\Server\\Server\\Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\termi\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\termi\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

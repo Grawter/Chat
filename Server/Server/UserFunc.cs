@@ -84,7 +84,7 @@ namespace Server
 
                                 if (member2 == null)
                                 {
-                                    me = new User { UserName = info[1], Email = info[2], Password = info[3] }; // подумать про валидацию
+                                    me = new User { UserName = info[1], Email = info[2], Password = info[3], PrivateID = Guid.NewGuid().ToString() }; // подумать про валидацию
                                     DataChat = new Dictionary<UsersFunc, string>();
                                     Server.NewUser(this);
 
@@ -157,7 +157,7 @@ namespace Server
                             continue;
                         else
                         {
-                            targetUser.Send($"#addfriend|{Me.UserName}"); // Отправка запроса о дружбе
+                            targetUser.Send($"#addfriend|{Me.UserName}|{Me.PrivateID}"); // Отправка запроса о дружбе
                             Send($"#friendrequest|{TargetNick}");
                         }
 
@@ -167,28 +167,27 @@ namespace Server
                     if (currentCommand.Contains("acceptfriend")) // Принятие запроса о дружбе
                     {
                         string friendtNick = currentCommand.Split('|')[1];
+                        string friendID = currentCommand.Split('|')[2];
 
                         UsersFunc friend = Server.GetUserByNick(friendtNick);
-                        if (friend != null)
+                        if (friend != null && friendID.Equals(friend.Me.PrivateID))
                         {
                             DataChat.Add(friend, null);
 
                             me.Friends.Add(new Friend { Name = friendtNick });
                             friend.Me.Friends.Add(new Friend { Name = Me.UserName });
 
-                            db.Users.Update(me);
-                            db.Users.Update(friend.Me);                        
+                            db.Users.Update(friend.Me);
                             db.SaveChanges();
 
                             Send($"#addtolist|{friendtNick}");
 
                             friend.DataChat.Add(this, null);
                             friend.Send($"#addtolist|{Me.UserName}");
-
                             friend.Send($"#addusersuccess|{Me.UserName}");
                         }
 
-                      continue;
+                        continue;
                     }
 
                     if (currentCommand.Contains("renouncement")) // Отказ запроса о дружбе
@@ -204,20 +203,26 @@ namespace Server
 
                     if (currentCommand.Contains("delete")) // Удаление из друзей
                     {
-                        string unfriendlyNick = currentCommand.Split('|')[1];                    
+                        using (var db = new ApplicationContext())
+                        {
+                            string unfriendlyNick = currentCommand.Split('|')[1];
 
-                        me.Friends.Remove(Me.Friends.FirstOrDefault(uf => uf.Name == unfriendlyNick));
-                        db.Users.Update(me);
+                            me.Friends.Remove(me.Friends.FirstOrDefault(uf => uf.Name == unfriendlyNick));
 
-                        var unfriend = db.Users.Include(u => u.Friends).FirstOrDefault(uf => uf.UserName == unfriendlyNick);
-                        unfriend.Friends.Remove(unfriend.Friends.FirstOrDefault(uf => uf.Name == Me.UserName));
-                        db.Users.Update(unfriend);
+                            for (int j = 0; j < db.Friends.Count(fr => fr.Name == unfriendlyNick && fr.UserId == me.Id); j++)
+                            {
+                                db.Friends.Remove(db.Friends.FirstOrDefault(fr => fr.Name == unfriendlyNick && fr.UserId == me.Id));
+                            }
 
-                        db.SaveChanges();
+                            var unfriend = db.Users.Include(u => u.Friends).FirstOrDefault(uf => uf.UserName == unfriendlyNick);
+                            unfriend.Friends.Remove(unfriend.Friends.FirstOrDefault(uf => uf.Name == Me.UserName));
 
-                        UsersFunc unfr = Server.GetUserByNick(unfriendlyNick);
-                        if (unfr != null)
-                            unfr.Send($"#remtolist|{Me.UserName}");
+                            db.SaveChanges();
+
+                            UsersFunc unfr = Server.GetUserByNick(unfriendlyNick);
+                            if (unfr != null)
+                                unfr.Send($"#remtolist|{Me.UserName}");
+                        }
 
                         continue;
                     }

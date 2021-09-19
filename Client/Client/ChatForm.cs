@@ -136,9 +136,7 @@ namespace Client
             catch
             {
                 MessageBox.Show("Связь с сервером не установлена.");
-            }
-
-            
+            }            
         }
 
         public void listner()
@@ -250,11 +248,12 @@ namespace Client
                     if (currentCommand.Contains("addfriend")) // Запрос о добавлении в контакты
                     {
                         string guest_name = currentCommand.Split('|')[1];
+                        string guest_id = currentCommand.Split('|')[2];
 
                         DialogResult Result = MessageBox.Show($"Вы хотите начать диалог с {guest_name} и добавить его в контакты?", "Начало диалога", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (Result == DialogResult.Yes)
                         {
-                            Send($"#acceptfriend|{guest_name}");
+                            Send($"#acceptfriend|{guest_name}|{guest_id}");
                         }
                         else
                             Send($"#renouncement|{guest_name}");
