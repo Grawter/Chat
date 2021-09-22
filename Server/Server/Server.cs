@@ -10,7 +10,7 @@ namespace Server
     {
         // Server info
         public static Socket ServerSocket;
-        public const string Host = "127.0.0.1";
+        public const string Host = "127.0.0.1";      
         public const int Port = 2222;
         public static bool Work = true;
 

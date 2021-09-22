@@ -146,7 +146,6 @@ C:\Users\termi\Desktop\MainChat\Server\Server\bin\Debug\net5.0\runtimes\win-arm\
 C:\Users\termi\Desktop\MainChat\Server\Server\bin\Debug\net5.0\runtimes\win-arm64\native\e_sqlite3.dll
 C:\Users\termi\Desktop\MainChat\Server\Server\bin\Debug\net5.0\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\termi\Desktop\MainChat\Server\Server\bin\Debug\net5.0\runtimes\win-x86\native\e_sqlite3.dll
-C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.csproj.AssemblyReference.cache
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.AssemblyInfoInputs.cache
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.AssemblyInfo.cs

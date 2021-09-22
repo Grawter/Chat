@@ -63,7 +63,6 @@ C:\Users\termi\Desktop\MainChat\Client\Client\bin\Debug\net5.0-windows\Client.ru
 C:\Users\termi\Desktop\MainChat\Client\Client\bin\Debug\net5.0-windows\Client.dll
 C:\Users\termi\Desktop\MainChat\Client\Client\bin\Debug\net5.0-windows\ref\Client.dll
 C:\Users\termi\Desktop\MainChat\Client\Client\bin\Debug\net5.0-windows\Client.pdb
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.csproj.AssemblyReference.cache
 C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.AuthForm.resources
 C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.ChatForm.resources
 C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.RegForm.resources
@@ -76,3 +75,4 @@ C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.dl
 C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\ref\Client.dll
 C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.pdb
 C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.genruntimeconfig.cache
+C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.csproj.AssemblyReference.cache

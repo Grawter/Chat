@@ -6,6 +6,8 @@ using System.Net.Sockets;
 using System.Threading;
 using Server.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using Server.Crypt;
 
 namespace Server
 {
@@ -20,18 +22,34 @@ namespace Server
 
         private readonly ApplicationContext db;
 
-        private Dictionary<UsersFunc, string> DataChat;
+        private Socket _userHandle;
+
+        RSAParameters publicKey;
+        RSAParameters privateKey;
+
+        byte[] session_key;
+
+        private Thread _userThread;
+
+        private bool Handshake = false;
 
         private bool AuthSuccess = false;
 
-        private Thread _userThread;
-        private Socket _userHandle;
+        private Dictionary<UsersFunc, string> DataChat;
 
         public UsersFunc(Socket handle)
         {
             db = new ApplicationContext();
 
             _userHandle = handle;
+
+            RSA RSA = RSA.Create();
+
+            publicKey = RSA.ExportParameters(false);
+            privateKey = RSA.ExportParameters(true);
+            
+            Send(publicKey.Modulus);
+            
             _userThread = new Thread(listner);
             _userThread.IsBackground = true;
             _userThread.Start();      
@@ -45,11 +63,26 @@ namespace Server
                 {
                     byte[] buffer = new byte[2048];
                     int bytesReceive = _userHandle.Receive(buffer); // Количество полученных байтов
-                    handleCommand(Encoding.Unicode.GetString(buffer, 0, bytesReceive)); // Отправка сообщения на обработку
+
+                    byte[] mess = new byte[bytesReceive];
+                    Array.Copy(buffer, mess, bytesReceive);
+
+                    if (Handshake)
+                    {
+                        string command = AESCrypt.AESDecrypt(mess, session_key);
+                        handleCommand(command); // Отправка сообщения на обработку
+                    }   
+                    else
+                    {
+                        session_key = RSACrypt.RSADecrypt(mess, privateKey);
+                        Handshake = true;
+                    }
+
                 }
             }
-            catch
+            catch (Exception exp)
             {
+                Console.WriteLine($"{Me.UserName} - Ошибка блока прослушивания: " + exp.Message);
                 Server.EndUser(this);
             }
         }
@@ -362,7 +395,7 @@ namespace Server
             }
             catch (Exception exp) 
             { 
-                Console.WriteLine("Ошибка обработчика команд: " + exp.Message); 
+                Console.WriteLine($"{Me.UserName} - Ошибка обработчика команд: " + exp.Message); 
             }
         }
 
@@ -381,7 +414,7 @@ namespace Server
             }
             catch (Exception exp)
             {
-                Console.WriteLine("Ошибка при отправке строки: " + exp.Message);
+                Console.WriteLine($"{Me.UserName} - Ошибка при отправке строки: " + exp.Message);
             }
         }
 
@@ -393,7 +426,7 @@ namespace Server
             }
             catch (Exception exp) 
             {
-                Console.WriteLine("Ошибка при отправке массива байт: " + exp.Message);
+                Console.WriteLine($"{Me.UserName} - Ошибка при отправке массива байт: " + exp.Message);
             }
         }     
 
@@ -405,7 +438,7 @@ namespace Server
             }
             catch (Exception exp) 
             {
-                Console.WriteLine("Ошибка при завершении сессии: " + exp.Message);
+                Console.WriteLine($"{Me.UserName} - Ошибка при завершении сессии: " + exp.Message);
             }
 
         }

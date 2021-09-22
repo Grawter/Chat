@@ -37,9 +37,9 @@ namespace Client
 
             Chat.UserName = textBox1.Text;
             Chat.Password = textBox2.Text;
-
+                
             Chat.Show();
-            Chat.Login();
+            Chat.Handshake(true);
             this.Hide();
         }
     }

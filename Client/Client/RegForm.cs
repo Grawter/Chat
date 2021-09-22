@@ -49,7 +49,7 @@ namespace Client
             Chat.Password = textBox3.Text;
 
             Chat.Show();
-            Chat.Registration();
+            Chat.Handshake(false);
             this.Hide();
         }
 

@@ -5,6 +5,9 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Net;
 using System.IO;
+using System.Security.Cryptography;
+using System.Collections.Generic;
+using Client.Crypt;
 
 namespace Client
 {
@@ -56,6 +59,7 @@ namespace Client
         {
             InitializeComponent();
 
+            #region Блок инициализации контекстного меню
             contextMenuStrip1 = new ContextMenuStrip(); // Инициализиуем контекстное меню
 
             ToolStripMenuItem SendFileItem = new ToolStripMenuItem("Отправить файл"); // Создание элемента меню
@@ -79,7 +83,7 @@ namespace Client
                     Send($"#sendfileto|{listBox1.SelectedItem}|{buffer.Length}|{fi.Name}"); // Передача информации о файле
                     Send(buffer); // Передача самого файла
                     MessageBox.Show("Файл загружен");
-                }                
+                }
             };
 
             contextMenuStrip1.Items.Add(SendFileItem); // Добавить ранее созданного элемента в меню
@@ -95,7 +99,7 @@ namespace Client
                     {
                         Send($"#delete|{listBox1.SelectedItem}");
                         listBox1.Items.Remove(listBox1.SelectedItem);
-                    }        
+                    }
                 }
             };
 
@@ -105,16 +109,21 @@ namespace Client
 
             BlockUser.Click += delegate
             {
-                
+
             };
 
             contextMenuStrip1.Items.Add(BlockUser);
 
             listBox1.ContextMenuStrip = contextMenuStrip1; // Закрепление созданного контекстного меню в листбоксе
+            #endregion
 
             _addMessage = new ChatEvent(AddMessage); // Связывание делегата с функцией
             _loadMessage = new LoadChatEvent(LoadMessage);
         }
+
+        RSAParameters RSAKeyInfo = new RSAParameters { Exponent = new byte[] { 1, 0 ,1 } };
+        byte[] session_key;
+        List<byte[]> keys = new List<byte[]>();
 
         private void ChatForm_Load(object sender, EventArgs e) // При загрузке чата
         {
@@ -124,8 +133,14 @@ namespace Client
                 _serverSocket = new Socket(temp.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                 _serverSocket.Connect(new IPEndPoint(temp, _port));
 
+                Thread.Sleep(400);
+
                 if (_serverSocket.Connected)
                 {
+                    byte[] buffer = new byte[256];
+                    int bytesReceive = _serverSocket.Receive(buffer);
+                    RSAKeyInfo.Modulus = buffer;
+
                     listenThread = new Thread(listner);
                     listenThread.IsBackground = true;
                     listenThread.Start();
@@ -147,6 +162,11 @@ namespace Client
                 {
                     byte[] buffer = new byte[2048];
                     int bytesReceive = _serverSocket.Receive(buffer);
+
+                    //byte[] mess = new byte[bytesReceive];
+                    //Array.Copy(buffer, mess, bytesReceive);
+
+                    //string command = AESCrypt.AESDecrypt(mess, session_key);
                     handleCommand(Encoding.Unicode.GetString(buffer, 0, bytesReceive));
                 }
             }
@@ -363,10 +383,23 @@ namespace Client
         }
 
         #region Блок обработки основных сценариев
+        public void Handshake(bool login) // "Обмен рукопожатиями"
+        {
+            Aes aes = Aes.Create();
+            session_key = aes.Key;
+            Send(RSACrypt.RSAEncrypt(session_key, RSAKeyInfo));
+
+            if (login)
+                Login();
+            else
+                Registration();
+        }
+
         public void Registration() // Регистрация
         {
             if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(password))
             {
+                //AESCrypt.AESEncrypt($"#register|{userName}|{email}|{password}", session_key);
                 Send($"#register|{userName}|{email}|{password}");
                 password = "";
             }     
@@ -376,7 +409,9 @@ namespace Client
         {
             if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(password))
             {
-                Send($"#login|{userName}|{password}");
+                string s = AESCrypt.AESEncrypt($"#login|{userName}|{password}", session_key);
+                Send(s);
+                //Send($"#login|{userName}|{password}");
                 password = "";
             }
         }
