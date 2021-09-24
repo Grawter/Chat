@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Net.Sockets;
 using System.Threading;
 using Server.Models;
@@ -61,15 +60,15 @@ namespace Server
             {
                 while (_userHandle.Connected)
                 {
-                    byte[] buffer = new byte[2048];
+                    byte[] buffer = new byte[65536];
                     int bytesReceive = _userHandle.Receive(buffer); // Количество полученных байтов
 
                     byte[] mess = new byte[bytesReceive];
                     Array.Copy(buffer, mess, bytesReceive);
-
+               
                     if (Handshake)
                     {
-                        string command = AESCrypt.AESDecrypt(mess, session_key);
+                        string command = AESCrypt.AESDecrypt(mess, session_key).Result;
                         handleCommand(command); // Отправка сообщения на обработку
                     }   
                     else
@@ -82,7 +81,9 @@ namespace Server
             }
             catch (Exception exp)
             {
-                Console.WriteLine($"{Me.UserName} - Ошибка блока прослушивания: " + exp.Message);
+                if(me != null)
+                    Console.WriteLine($"{Me.UserName} - Ошибка блока прослушивания: " + exp.Message);
+                
                 Server.EndUser(this);
             }
         }
@@ -101,7 +102,7 @@ namespace Server
                     if (string.IsNullOrEmpty(currentCommand))
                         continue;
 
-                    #region Блок регистрации и аутентификации
+                    #region Блок регистраци, аутентификации и завершения сессии
 
                     if (!AuthSuccess)
                     {
@@ -157,7 +158,10 @@ namespace Server
 
                                     foreach (var fr in Me.Friends)
                                     {
-                                        userList += fr.Name + ",";
+                                        if (fr == Me.Friends.Last())
+                                            userList += fr.Name;
+                                        else
+                                            userList += fr.Name + ",";
                                     }
 
                                     if (userList != "")
@@ -171,6 +175,12 @@ namespace Server
                         }
 
                         continue;
+                    }
+
+                    if (currentCommand.Contains("endsession")) // Завершить сессию
+                    {
+                        Server.EndUser(this);
+                        return;
                     }
 
                     #endregion
@@ -217,7 +227,6 @@ namespace Server
 
                             friend.DataChat.Add(this, null);
                             friend.Send($"#addtolist|{Me.UserName}");
-                            friend.Send($"#addusersuccess|{Me.UserName}");
                         }
 
                         continue;
@@ -250,11 +259,16 @@ namespace Server
                             var unfriend = db.Users.Include(u => u.Friends).FirstOrDefault(uf => uf.UserName == unfriendlyNick);
                             unfriend.Friends.Remove(unfriend.Friends.FirstOrDefault(uf => uf.Name == Me.UserName));
 
-                            db.SaveChanges();
+                            db.SaveChanges();                   
 
                             UsersFunc unfr = Server.GetUserByNick(unfriendlyNick);
                             if (unfr != null)
+                            {
+                                DataChat.Remove(unfr);
+                                unfr.DataChat.Remove(this);
                                 unfr.Send($"#remtolist|{Me.UserName}");
+                            }
+                                
                         }
 
                         continue;
@@ -281,114 +295,44 @@ namespace Server
                         SendMessage(Me.UserName, Content);
                         targetUser.SendMessage(Me.UserName, Content);
 
+                        if(!DataChat.ContainsKey(targetUser))
+                            DataChat.Add(targetUser, null);
                         DataChat[targetUser] += Environment.NewLine + Me.UserName + ": " + Content;
+
+                        if (!targetUser.DataChat.ContainsKey(this))
+                            targetUser.DataChat.Add(this, null);
                         targetUser.DataChat[this] += Environment.NewLine + Me.UserName + ": " + Content;
 
                         continue;
                     }
 
-                    if (currentCommand.Contains("getchat")) // Подгрузка чата
-                    {
-                        string friendtNick = currentCommand.Split('|')[1];
-                        
-                        UsersFunc friend = Server.GetUserByNick(friendtNick);
-                        
-                        if (friend != null && Me.Friends.FirstOrDefault(fr => fr.Name == friendtNick) != null)
-                        {
-                            string mess;
-                            
-                            if (DataChat.TryGetValue(friend, out mess))
-                                Send($"#chat|{mess}");
-                            else
-                            {
-                                DataChat.Add(friend, null);
-                                DataChat.TryGetValue(friend, out mess);
-                                Send($"#chat|{mess}");
-                            }
+                    #region Подгрузка чата (Не используется)
+                    //if (currentCommand.Contains("getchat")) // Подгрузка чата (Не используется)
+                    //{
+                    //    string friendtNick = currentCommand.Split('|')[1];
 
-                        }
+                    //    UsersFunc friend = Server.GetUserByNick(friendtNick);
 
-                        continue;
-                    }
+                    //    if (friend != null && Me.Friends.FirstOrDefault(fr => fr.Name == friendtNick) != null)
+                    //    {
+                    //        string mess;
 
+                    //        if (DataChat.TryGetValue(friend, out mess))
+                    //            Send($"#chat|{mess}");
+                    //        else
+                    //        {
+                    //            DataChat.Add(friend, null);
+                    //            DataChat.TryGetValue(friend, out mess);
+                    //            Send($"#chat|{mess}");
+                    //        }
+
+                    //    }
+
+                    //    continue;
+                    //}
                     #endregion
 
-                    #region Блок передачи файлов
-
-                    if (currentCommand.Contains("sendfileto")) // Обработка отправленного файла
-                    {
-                        string[] Arguments = currentCommand.Split('|');
-                        string TargetName = Arguments[1];
-                        int FileSize = int.Parse(Arguments[2]);
-                        string FileName = Arguments[3];
-                        byte[] fileBuffer = new byte[FileSize];
-                        _userHandle.Receive(fileBuffer); // Получаем байты файла
-
-                        UsersFunc targetUser = Server.GetUserByNick(TargetName);
-
-                        if (targetUser == null || Me.Friends.FirstOrDefault(fr => fr.Name == TargetName) == null)
-                        {
-                            Send($"#unknownuser|{TargetName}");
-                            continue;
-                        }
-
-                        FileD newFile = new FileD
-                        {
-                            ID = Server.Files.Count + 1,
-                            FileName = FileName,
-                            From = me.UserName,
-                            To = TargetName,
-                            fileBuffer = fileBuffer,
-                            FileSize = fileBuffer.Length
-                        };
-
-                        Server.Files.Add(newFile);
-
-                        targetUser.Send($"#getfile|{newFile.FileName}|{newFile.From}|{newFile.fileBuffer.Length}|{newFile.ID}");
-
-                        continue;
-                    }
-
-                    if (currentCommand.Contains("accfile")) // Отправка файла пользователю
-                    {
-                        string id = currentCommand.Split('|')[1];
-                        FileD file = Server.GetFileByID(int.Parse(id));
-
-                        if (file.ID == 0 || file.To != Me.UserName || Me.Friends.FirstOrDefault(fr => fr.Name == file.From) == null)
-                        {
-                            Send($"#unknownfile");
-                            continue;
-                        }
-
-                        Send(file.fileBuffer);
-                        Server.Files.Remove(file);
-
-                        continue;
-                    }
-
-                    if (currentCommand.Contains("notaccfile")) // Удаление файла в случае отказа принятия
-                    {
-                        string id = currentCommand.Split('|')[1];
-                        FileD file = Server.GetFileByID(int.Parse(id));
-
-                        if (file.ID == 0 || file.To != me.UserName)
-                        {
-                            continue;
-                        }
-
-                        Server.Files.Remove(file);
-
-                        continue;
-                    }
-
-                    if (currentCommand.Contains("endsession")) // Завершить сессию
-                    {
-                        Server.EndUser(this);
-                        return;
-                    }
-
                     #endregion
-
                 }
 
 
@@ -410,7 +354,8 @@ namespace Server
         {
             try
             {
-                _userHandle.Send(Encoding.Unicode.GetBytes(buffer));
+                byte[] command = AESCrypt.AESEncrypt(buffer, session_key).Result;
+                _userHandle.Send(command);
             }
             catch (Exception exp)
             {

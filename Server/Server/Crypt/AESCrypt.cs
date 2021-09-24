@@ -1,23 +1,23 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace Server.Crypt
 {
     public class AESCrypt
     {
-        public static string AESEncrypt(string message, byte[] key)
+        public static async Task <byte[]> AESEncrypt(string message, byte[] key)
         {
             try
             {
-                string enc_mess;
                 byte[] enc_byte;
 
                 using (MemoryStream memStream = new MemoryStream())
                 {
                     using (Aes aes = Aes.Create())
                     {
+                        aes.Padding = PaddingMode.PKCS7;
                         aes.GenerateIV();
 
                         aes.Key = key;
@@ -28,25 +28,24 @@ namespace Server.Crypt
                         {
                             using (StreamWriter encryptWriter = new StreamWriter(cryptoStream))
                             {
-                                encryptWriter.Write(message);
+                               await encryptWriter.WriteAsync(message);
                             }
                         }
 
                         enc_byte = memStream.ToArray();
-                        enc_mess = Encoding.Unicode.GetString(enc_byte);
                     }
                 }
 
-                return enc_mess;
+                return enc_byte;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"The encryption failed - {ex}");
+                Console.WriteLine($"The encryption AES failed - {ex}");
                 throw new Exception(ex.Message);
             }
         }
 
-        public static string AESDecrypt(byte[] enc_mess, byte[] key)
+        public static async Task <string> AESDecrypt(byte[] enc_mess, byte[] key)
         {
             try
             {
@@ -65,11 +64,13 @@ namespace Server.Crypt
                 {
                     using (Aes aes = Aes.Create())
                     {
+                        aes.Padding = PaddingMode.PKCS7;
+
                         using (CryptoStream cryptoStream = new CryptoStream(memStream, aes.CreateDecryptor(key, iv), CryptoStreamMode.Read))
                         {
                             using (StreamReader decryptReader = new StreamReader(cryptoStream))
                             {
-                                decryptedMessage = decryptReader.ReadToEnd();
+                                decryptedMessage = await decryptReader.ReadToEndAsync();
                             }
                         }
                     }
@@ -80,7 +81,7 @@ namespace Server.Crypt
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"The encryption failed - {ex}");
+                Console.WriteLine($"The decryption AES failed - {ex}");
                 throw new Exception(ex.Message);
             }
 
