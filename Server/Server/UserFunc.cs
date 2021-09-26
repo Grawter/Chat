@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
@@ -7,6 +6,8 @@ using Server.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using Server.Crypt;
+using System.Text;
+using Server.Helpers;
 
 namespace Server
 {
@@ -34,8 +35,6 @@ namespace Server
 
         private bool AuthSuccess = false;
 
-        private Dictionary<UsersFunc, string> DataChat;
-
         public UsersFunc(Socket handle)
         {
             db = new ApplicationContext();
@@ -60,7 +59,7 @@ namespace Server
             {
                 while (_userHandle.Connected)
                 {
-                    byte[] buffer = new byte[65536];
+                    byte[] buffer = new byte[32768];
                     int bytesReceive = _userHandle.Receive(buffer); // Количество полученных байтов
 
                     byte[] mess = new byte[bytesReceive];
@@ -118,8 +117,14 @@ namespace Server
 
                                 if (member2 == null)
                                 {
-                                    me = new User { UserName = info[1], Email = info[2], Password = info[3], PrivateID = Guid.NewGuid().ToString() }; // подумать про валидацию
-                                    DataChat = new Dictionary<UsersFunc, string>();
+                                    byte[] salt = Hash.GenerateSalt();
+
+                                    me = new User { UserName = info[1], 
+                                        Email = info[2], 
+                                        Password = HashManager.GenerateHash(info[3], salt),
+                                        Salt = salt,
+                                        PrivateID = Guid.NewGuid().ToString() }; // подумать про валидацию
+
                                     Server.NewUser(this);
 
                                     db.Users.Add(me);
@@ -143,11 +148,10 @@ namespace Server
                             var member = db.Users.Include(u => u.Friends).FirstOrDefault(u => u.UserName == info[1]);
 
                             if (member != null)
-                            {
-                                if (info[2].Equals(member.Password)) // не забыть сделать шифровку дешифровку
+                            {                          
+                                if (HashManager.Access(info[2], member.Salt, member.Password))
                                 {
                                     me = member;
-                                    DataChat = new Dictionary<UsersFunc, string>();
                                     Server.NewUser(this);
 
                                     AuthSuccess = true;
@@ -215,18 +219,14 @@ namespace Server
                         UsersFunc friend = Server.GetUserByNick(friendtNick);
                         if (friend != null && friendID.Equals(friend.Me.PrivateID))
                         {
-                            DataChat.Add(friend, null);
-
                             me.Friends.Add(new Friend { Name = friendtNick });
                             friend.Me.Friends.Add(new Friend { Name = Me.UserName });
 
                             db.Users.Update(friend.Me);
                             db.SaveChanges();
 
-                            Send($"#addtolist|{friendtNick}");
-
-                            friend.DataChat.Add(this, null);
-                            friend.Send($"#addtolist|{Me.UserName}");
+                            Send($"#addtolist|{friendtNick}");                    
+                            friend.Send($"#addtolist|{Me.UserName}");                                  
                         }
 
                         continue;
@@ -262,12 +262,8 @@ namespace Server
                             db.SaveChanges();                   
 
                             UsersFunc unfr = Server.GetUserByNick(unfriendlyNick);
-                            if (unfr != null)
-                            {
-                                DataChat.Remove(unfr);
-                                unfr.DataChat.Remove(this);
+                            if (unfr != null)    
                                 unfr.Send($"#remtolist|{Me.UserName}");
-                            }
                                 
                         }
 
@@ -276,14 +272,28 @@ namespace Server
 
                     #endregion
 
-                    #region Блок передачи сообщений
+                    #region Блок передачи сообщений и обмена ключей
+
+                    if (currentCommand.Contains("getkey")) // Обмен ключами
+                    {
+                        string friendNick = currentCommand.Split('|')[1];
+
+                        UsersFunc friend = Server.GetUserByNick(friendNick);
+                        if (friend != null)
+                        {
+                            Aes aes = Aes.Create();
+                            Send($"#key|{friend.Me.UserName}|{Encoding.Unicode.GetString(aes.Key)}");
+                            friend.Send($"#key|{me.UserName}|{Encoding.Unicode.GetString(aes.Key)}");
+                        }
+
+                        continue;
+                    }
 
                     if (currentCommand.Contains("message")) // Обработка отправленного сообщения
                     {
                         string[] Arguments = currentCommand.Split('|');
                         string TargetName = Arguments[1];
-                        string Content = Arguments[2];
-
+                        
                         UsersFunc targetUser = Server.GetUserByNick(TargetName);
 
                         if (targetUser == null || Me.Friends.FirstOrDefault(fr => fr.Name == TargetName) == null)
@@ -292,49 +302,19 @@ namespace Server
                             continue;
                         }
 
-                        SendMessage(Me.UserName, Content);
-                        targetUser.SendMessage(Me.UserName, Content);
+                        byte[] mess = new byte[32768];
+                        int bytesReceive = _userHandle.Receive(mess);
+                        byte[] enc_mess = new byte[bytesReceive];
+                        Array.Copy(mess, enc_mess, bytesReceive);
 
-                        if(!DataChat.ContainsKey(targetUser))
-                            DataChat.Add(targetUser, null);
-                        DataChat[targetUser] += Environment.NewLine + Me.UserName + ": " + Content;
-
-                        if (!targetUser.DataChat.ContainsKey(this))
-                            targetUser.DataChat.Add(this, null);
-                        targetUser.DataChat[this] += Environment.NewLine + Me.UserName + ": " + Content;
+                        targetUser.Send($"#msg|{Me.UserName}");
+                        targetUser.Send(enc_mess);
 
                         continue;
                     }
 
-                    #region Подгрузка чата (Не используется)
-                    //if (currentCommand.Contains("getchat")) // Подгрузка чата (Не используется)
-                    //{
-                    //    string friendtNick = currentCommand.Split('|')[1];
-
-                    //    UsersFunc friend = Server.GetUserByNick(friendtNick);
-
-                    //    if (friend != null && Me.Friends.FirstOrDefault(fr => fr.Name == friendtNick) != null)
-                    //    {
-                    //        string mess;
-
-                    //        if (DataChat.TryGetValue(friend, out mess))
-                    //            Send($"#chat|{mess}");
-                    //        else
-                    //        {
-                    //            DataChat.Add(friend, null);
-                    //            DataChat.TryGetValue(friend, out mess);
-                    //            Send($"#chat|{mess}");
-                    //        }
-
-                    //    }
-
-                    //    continue;
-                    //}
-                    #endregion
-
                     #endregion
                 }
-
 
             }
             catch (Exception exp) 
@@ -344,11 +324,6 @@ namespace Server
         }
 
         #region Блок обработки основных сценариев
-
-        public void SendMessage(string from, string message) // Отослать сообщение 
-        {
-            Send($"#msg|{from}|{message}");
-        }
 
         public void Send(string buffer) // Отослать сообщение в формате строки
         {

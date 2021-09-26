@@ -18,7 +18,6 @@ namespace Client.Crypt
                 {
                     using (Aes aes = Aes.Create())
                     {
-                        aes.Padding = PaddingMode.PKCS7;
                         aes.GenerateIV();
 
                         aes.Key = key;
@@ -65,8 +64,6 @@ namespace Client.Crypt
                 {
                     using (Aes aes = Aes.Create())
                     {
-                        aes.Padding = PaddingMode.PKCS7;
-
                         using (CryptoStream cryptoStream = new CryptoStream(memStream, aes.CreateDecryptor(key, iv), CryptoStreamMode.Read))
                         {
                             using (StreamReader decryptReader = new StreamReader(cryptoStream))

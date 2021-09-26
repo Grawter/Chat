@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Net.Sockets;
 using System.Net;
-using System.IO;
 using System.Security.Cryptography;
 using System.Collections.Generic;
 using Client.Crypt;
@@ -138,7 +137,7 @@ namespace Client
             {
                 while (_serverSocket.Connected)
                 {
-                    byte[] buffer = new byte[65536];
+                    byte[] buffer = new byte[32768];
                     int bytesReceive = _serverSocket.Receive(buffer);
 
                     byte[] mess = new byte[bytesReceive];
@@ -254,15 +253,12 @@ namespace Client
                         string guest_id = currentCommand.Split('|')[2];
 
                         DialogResult Result = MessageBox.Show($"Вы хотите начать диалог с {guest_name} и добавить его в контакты?", "Начало диалога", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        
                         if (Result == DialogResult.Yes)
-                        {
                             Send($"#acceptfriend|{guest_name}|{guest_id}");
-                        }
                         else
-                        {
                             Send($"#renouncement|{guest_name}");
-                        }
-
+                        
                         continue;
                     }
 
@@ -296,6 +292,15 @@ namespace Client
 
                     #region Блок принятия сообщений
 
+                    if (currentCommand.Contains("key")) // Сохранение ключ собеседника
+                    {
+                        string user = currentCommand.Split('|')[1];
+                        byte[] key = Encoding.Unicode.GetBytes(currentCommand.Split('|')[2]);
+                        keys.Add(user, key);
+
+                        continue;
+                    }
+
                     if (currentCommand.Contains("unknownuser")) // Если не найден адресат
                     {
                         string user = currentCommand.Split('|')[1];
@@ -305,12 +310,21 @@ namespace Client
 
                     if (currentCommand.Contains("msg")) // Принять сообщение
                     {
-                        string[] Arguments = currentCommand.Split('|');
+                        string from = currentCommand.Split('|')[1];
+                        byte[] key = keys[from];
 
-                        if (!Arguments[1].Equals(UserName))
-                            DataChat[Arguments[1]] += Environment.NewLine + Arguments[1] + ": " + Arguments[2];
+                        byte[] data = new byte[32768];
+                        int bytesReceive = _serverSocket.Receive(data);
+                        byte[] encr_mess = new byte[bytesReceive];
 
-                        AddMessage(Arguments[2], Arguments[1]);
+                        Array.Copy(data, encr_mess, bytesReceive);
+
+                        string mess = AESCrypt.AESDecrypt(encr_mess, key).Result;
+
+                        if (!from.Equals(UserName))
+                            DataChat[from] += Environment.NewLine + from + ": " + mess;
+
+                        AddMessage(mess, from);
                         continue;
                     }
 
@@ -320,9 +334,9 @@ namespace Client
                         LoadMessage(chat);
                         continue;
                     }
-              
 
                     #endregion
+
                 }
                 catch (Exception exp)
                 {
@@ -436,12 +450,13 @@ namespace Client
                     textBox2.Enabled = true;
                     button1.Enabled = true;
 
+                    if (!keys.ContainsKey(listBox1.SelectedItem.ToString()))                   
+                        Send($"#getkey|{listBox1.SelectedItem}");                
+
                     string chat;
 
                     if (DataChat.TryGetValue(listBox1.SelectedItem.ToString(), out chat))
                         LoadMessage(chat);
-
-                    //Send($"#getchat|{listBox1.SelectedItem}"); // Не используется
                 }
             }                      
         }
@@ -455,7 +470,10 @@ namespace Client
                     string msgData = textBox2.Text;
                     string to = listBox1.SelectedItem.ToString();
                     DataChat[to] += Environment.NewLine + UserName + ": " + msgData;
-                    Send($"#message|{to}|{msgData}");
+                    Send($"#message|{to}");
+                    byte[] enc = AESCrypt.AESEncrypt(msgData, keys[to]).Result;
+                    Send(enc);
+                    AddMessage(msgData, UserName);
                 }
 
                 textBox2.Text = string.Empty;
@@ -473,7 +491,10 @@ namespace Client
                         string msgData = textBox2.Text;
                         string to = listBox1.SelectedItem.ToString();
                         DataChat[to] += Environment.NewLine + UserName + ": " + msgData;
-                        Send($"#message|{to}|{msgData}");
+                        Send($"#message|{to}");
+                        byte[] enc = AESCrypt.AESEncrypt(msgData, keys[to]).Result;
+                        Send(enc);
+                        AddMessage(msgData, UserName);
                     }
 
                     textBox2.Text = string.Empty;
@@ -502,5 +523,6 @@ namespace Client
         }
 
         #endregion
+       
     }
 }
