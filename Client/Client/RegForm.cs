@@ -1,10 +1,14 @@
-﻿using System;
+﻿using Client.Helpers;
+using System;
 using System.Windows.Forms;
 
 namespace Client
 {
     public partial class RegForm : Form
     {
+        bool attempt = false;
+        ChatForm Chat;
+
         public string Status
         {
             set { label5.Text = value; }
@@ -23,34 +27,61 @@ namespace Client
         private void button1_Click(object sender, EventArgs e)
         {
             Owner.Show();
-
             this.Hide();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(textBox1.Text)|| string.IsNullOrWhiteSpace(textBox2.Text)|| string.IsNullOrWhiteSpace(textBox3.Text) || string.IsNullOrWhiteSpace(textBox4.Text))
+            string UserName = textBox1.Text, Email = textBox2.Text, Password = textBox3.Text;
+
+            if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password) || string.IsNullOrWhiteSpace(textBox4.Text))
             {
                 label5.Text = "Заполните пустые поля!";
                 return;
             }
 
-            if (!textBox3.Text.Equals(textBox4.Text))
+            if (!Password.Equals(textBox4.Text))
             {
                 label5.Text = "Пароли не совпадают!";
                 return;
             }
 
-            ChatForm Chat = new ChatForm();
-            Chat.Owner = this;
+            switch (DataValidation.isValid(UserName, Email, Password))
+            {
+                case 1:
+                    label5.Text = "Логин меньше 6 символов";
+                    return;
 
-            Chat.UserName = textBox1.Text;
-            Chat.Email = textBox2.Text;
-            Chat.Password = textBox3.Text;
+                case 2:
+                    label5.Text = "Email не соответствует формату";
+                    return;
+
+                case 3:
+                    label5.Text = "Пароли не соответствует формату";
+                    MessageBox.Show("Пароль должен содержать не менее 6 символов, включая минимум один формата [a-z],[A-Z],[0-9] и спец. символ");
+                    return;
+            }
+
+            if (Chat == null)
+            {
+                Chat = new ChatForm();
+                Chat.Owner = this;
+            }
+
+            Chat.UserName = UserName;
+            Chat.Email = Email;
+            Chat.Password = Password;
 
             Chat.Show();
-            Chat.Handshake(false);
+
+            if(!attempt)
+                Chat.Handshake(false);
+            else
+                Chat.Registration();
+
             this.Hide();
+
+            attempt = true;
         }
 
     }

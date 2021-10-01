@@ -20,7 +20,7 @@ namespace Server
             get { return me; }
         }
 
-        private readonly ApplicationContext db;
+        private ApplicationContext db;
 
         private Socket _userHandle;
 
@@ -31,13 +31,15 @@ namespace Server
 
         private Thread _userThread;
 
-        private bool Handshake = false;
+        private bool Handshake = false;     
 
         private bool AuthSuccess = false;
 
+        private bool Silence_mode = false;
+
         public UsersFunc(Socket handle)
         {
-            db = new ApplicationContext();
+            //db = new ApplicationContext();
 
             _userHandle = handle;
 
@@ -64,9 +66,12 @@ namespace Server
 
                     byte[] mess = new byte[bytesReceive];
                     Array.Copy(buffer, mess, bytesReceive);
-               
+
                     if (Handshake)
                     {
+                        if (db == null)
+                            db = new ApplicationContext();
+
                         string command = AESCrypt.AESDecrypt(mess, session_key).Result;
                         handleCommand(command); // Отправка сообщения на обработку
                     }   
@@ -119,11 +124,14 @@ namespace Server
                                 {
                                     byte[] salt = Hash.GenerateSalt();
 
-                                    me = new User { UserName = info[1], 
-                                        Email = info[2], 
+                                    me = new User
+                                    {
+                                        UserName = info[1],
+                                        Email = info[2],
                                         Password = HashManager.GenerateHash(info[3], salt),
                                         Salt = salt,
-                                        PrivateID = Guid.NewGuid().ToString() }; // подумать про валидацию
+                                        PrivateID = Guid.NewGuid().ToString()
+                                    };
 
                                     Server.NewUser(this);
 
@@ -189,14 +197,14 @@ namespace Server
 
                     #endregion
 
-                    #region Блок добавления и удаления контактов 
+                    #region Блок добавления, удаления и блокирования контактов 
 
                     if (currentCommand.Contains("findbynick")) // Найти пользователя
                     {
                         string TargetNick = currentCommand.Split('|')[1];
 
                         UsersFunc targetUser = Server.GetUserByNick(TargetNick);
-                        if (targetUser == null || Me.Friends.FirstOrDefault(f => f.Name == TargetNick) != null)
+                        if (targetUser == null || Me.Friends.FirstOrDefault(f => f.Name == TargetNick) != null || targetUser.Silence_mode)
                         {
                             Send($"#failusersuccess|{TargetNick}");
                         }
@@ -225,8 +233,8 @@ namespace Server
                             db.Users.Update(friend.Me);
                             db.SaveChanges();
 
-                            Send($"#addtolist|{friendtNick}");                    
-                            friend.Send($"#addtolist|{Me.UserName}");                                  
+                            Send($"#addtolist|{friendtNick}");
+                            friend.Send($"#addtolist|{Me.UserName}");
                         }
 
                         continue;
@@ -259,40 +267,67 @@ namespace Server
                             var unfriend = db.Users.Include(u => u.Friends).FirstOrDefault(uf => uf.UserName == unfriendlyNick);
                             unfriend.Friends.Remove(unfriend.Friends.FirstOrDefault(uf => uf.Name == Me.UserName));
 
-                            db.SaveChanges();                   
+                            db.SaveChanges();
 
                             UsersFunc unfr = Server.GetUserByNick(unfriendlyNick);
-                            if (unfr != null)    
+                            if (unfr != null)
+                            {
+                                unfr.me = unfriend;
                                 unfr.Send($"#remtolist|{Me.UserName}");
-                                
+                            }             
                         }
+
+                        continue;
+                    }
+
+                    if (currentCommand.Contains("silenceon")) // Включить режим не беспокоить
+                    {
+                        Silence_mode = true;
+                        continue;
+                    }
+
+                    if (currentCommand.Contains("silenceoff")) // Выключить режим не беспокоить
+                    {
+                        Silence_mode = false;
+                        continue;
+                    }
+
+                    if (currentCommand.Contains("isonline")) // Проверка онлайна
+                    {
+                        string friend = currentCommand.Split('|')[1];
+                        UsersFunc targetUser = Server.GetUserByNick(friend);
+
+                        if (targetUser == null)
+                            Send($"#offline");
 
                         continue;
                     }
 
                     #endregion
 
-                    #region Блок передачи сообщений и обмена ключей
+                    #region Блок передачи сообщений
 
-                    if (currentCommand.Contains("getkey")) // Обмен ключами
+                    if (currentCommand.Contains("message")) // Обработка отправленного сообщения
                     {
-                        string friendNick = currentCommand.Split('|')[1];
+                        string TargetName = currentCommand.Split('|')[1];
+                        string Content = currentCommand.Split('|')[2];
 
-                        UsersFunc friend = Server.GetUserByNick(friendNick);
-                        if (friend != null)
+                        UsersFunc targetUser = Server.GetUserByNick(TargetName);
+
+                        if (targetUser == null || Me.Friends.FirstOrDefault(fr => fr.Name == TargetName) == null)
                         {
-                            Aes aes = Aes.Create();
-                            Send($"#key|{friend.Me.UserName}|{Encoding.Unicode.GetString(aes.Key)}");
-                            friend.Send($"#key|{me.UserName}|{Encoding.Unicode.GetString(aes.Key)}");
+                            Send($"#unknownuser|{TargetName}");
+                            continue;
                         }
+
+                        targetUser.Send($"#msg|{Me.UserName}|{Content}");
 
                         continue;
                     }
 
-                    if (currentCommand.Contains("message")) // Обработка отправленного сообщения
+                    if (currentCommand.Contains("secmess")) // Обработка отправленного сообщения с двойной шифровкой
                     {
-                        string[] Arguments = currentCommand.Split('|');
-                        string TargetName = Arguments[1];
+                        string TargetName = currentCommand.Split('|')[1];
                         
                         UsersFunc targetUser = Server.GetUserByNick(TargetName);
 
@@ -307,8 +342,9 @@ namespace Server
                         byte[] enc_mess = new byte[bytesReceive];
                         Array.Copy(mess, enc_mess, bytesReceive);
 
-                        targetUser.Send($"#msg|{Me.UserName}");
-                        targetUser.Send(enc_mess);
+                        byte[] secure_mess = AESCrypt.AESEncrypt(enc_mess, targetUser.session_key).Result;
+                        targetUser.Send($"#secmess|{Me.UserName}");
+                        targetUser.Send(secure_mess);
 
                         continue;
                     }

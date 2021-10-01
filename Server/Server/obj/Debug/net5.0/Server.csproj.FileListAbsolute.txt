@@ -155,3 +155,4 @@ C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.dll
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\ref\Server.dll
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.pdb
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.genruntimeconfig.cache
+C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.csproj.AssemblyReference.cache

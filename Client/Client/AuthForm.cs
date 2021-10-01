@@ -5,6 +5,10 @@ namespace Client
 {
     public partial class AuthForm : Form
     {
+        bool attempt = false;
+        RegForm Reg;
+        ChatForm Chat;
+
         public string Status
         {
             set { label3.Text = value; }
@@ -17,30 +21,43 @@ namespace Client
 
         private void button1_Click(object sender, EventArgs e)
         {
-            RegForm Reg = new RegForm();
-            Reg.Owner = this;
-            Reg.Show();
+            if (Reg == null)
+            {
+                Reg = new RegForm();
+                Reg.Owner = this;
+            }        
 
+            Reg.Show();
             this.Hide();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(textBox2.Text) || string.IsNullOrWhiteSpace(textBox1.Text))
+            if (string.IsNullOrWhiteSpace(textBox1.Text) || string.IsNullOrWhiteSpace(textBox2.Text))
             {
                 label3.Text = "Заполните пустые поля!";
                 return;
             }
 
-            ChatForm Chat = new ChatForm();
-            Chat.Owner = this;
+            if(Chat == null)
+            {
+                Chat = new ChatForm();
+                Chat.Owner = this;
+            }
 
             Chat.UserName = textBox1.Text;
             Chat.Password = textBox2.Text;
-                
+            
             Chat.Show();
-            Chat.Handshake(true);
+            
+            if (!attempt)
+                Chat.Handshake(true);
+            else
+                Chat.Login();
+
             this.Hide();
+
+            attempt = true;
         }
     }
 }

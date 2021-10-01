@@ -23,7 +23,6 @@ namespace Server
                                                               // блокирует вызывающий поток до появления нового подключения.)
                 Console.WriteLine($"Новое подключение: {handle.RemoteEndPoint}"); // возвращает айпишник подключения
                 new UsersFunc(handle);
-
             }
 
             Console.WriteLine("Сервер закрывается...");

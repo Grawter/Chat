@@ -17,7 +17,7 @@ namespace Client
         private const string _host = "127.0.0.1";
         private const int _port = 2222;
 
-        private delegate void ChatEvent(string from, string message);
+        private delegate void ChatEvent(string message, string from, bool ds);
         private delegate void LoadChatEvent(string message);
         private ChatEvent _addMessage;
         private LoadChatEvent _loadMessage;
@@ -30,6 +30,27 @@ namespace Client
         private Dictionary<string, byte[]> keys;
 
         private Dictionary<string, string> DataChat;
+
+        public string Friend
+        {
+            get { return friend; }
+            set
+            {
+                friend = value;
+            }
+        }
+        private string friend;
+
+        public byte[] Mass_k
+        {
+            get { return mass_k; }
+            set
+            {
+                mass_k = value;
+            }
+        }
+
+        private byte[] mass_k;
 
         public string UserName
         {
@@ -68,39 +89,67 @@ namespace Client
 
             contextMenuStrip1 = new ContextMenuStrip(); // Инициализиуем контекстное меню
 
-            ToolStripMenuItem DeleteUser = new ToolStripMenuItem("Удалить"); // Создание элемента меню
+            ToolStripMenuItem SetKey = new ToolStripMenuItem("Установить ключ"); // Создание элемента меню
+
+            SetKey.Click += delegate // Функционал элемента
+            {
+                if (listBox1.SelectedItem != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
+                    {
+                        byte[] current_key;
+                        string nick = listBox1.SelectedItem.ToString();
+
+                        KeySetForm kf = new KeySetForm();
+                        kf.Owner = this;
+                        kf.Username = nick;
+                        if (keys.TryGetValue(nick, out current_key))
+                            kf.Current_key = current_key;
+
+                        kf.ShowDialog();
+
+                        if (mass_k != null)
+                        {
+                            if (keys.ContainsKey(nick))
+                                keys[nick] = mass_k;
+                            else
+                                keys.Add(nick, mass_k);
+
+                            mass_k = null;
+                        }
+                    }
+                }    
+            };
+
+            ToolStripMenuItem DeleteUser = new ToolStripMenuItem("Удалить"); 
 
             DeleteUser.Click += delegate // Функционал элемента
             {
-                if (listBox1.SelectedItems.Count > 0 && !string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
+                if (listBox1.SelectedItem != null)
                 {
-                    DialogResult Result = MessageBox.Show($"Удалить {listBox1.SelectedItem}?", "Удаление из контактов", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (Result == DialogResult.Yes)
+                    if (!string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
                     {
-                        Send($"#delete|{listBox1.SelectedItem}");
-                        DataChat.Remove(listBox1.SelectedItem.ToString());
-                        listBox1.Items.Remove(listBox1.SelectedItem);               
+                        DialogResult Result = MessageBox.Show($"Удалить {listBox1.SelectedItem}?", "Удаление из контактов", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if (Result == DialogResult.Yes)
+                        {
+                            Send($"#delete|{listBox1.SelectedItem}");
+                            DataChat.Remove(listBox1.SelectedItem.ToString());
+                            listBox1.Items.Remove(listBox1.SelectedItem);
+                        }
                     }
-                }
+                }                  
             };
 
+            contextMenuStrip1.Items.Add(SetKey); // Добавить ранее созданного элемента в меню
             contextMenuStrip1.Items.Add(DeleteUser); // Добавить ранее созданного элемента в меню
-
-            ToolStripMenuItem BlockUser = new ToolStripMenuItem("Заблокировать");
-
-            BlockUser.Click += delegate
-            {
-
-            };
-
-            contextMenuStrip1.Items.Add(BlockUser);
-
+           
             listBox1.ContextMenuStrip = contextMenuStrip1; // Закрепление созданного контекстного меню в листбоксе
+            
             #endregion
 
             _addMessage = new ChatEvent(AddMessage); // Связывание делегата с функцией
             _loadMessage = new LoadChatEvent(LoadMessage);
-        }       
+        }
 
         private void ChatForm_Load(object sender, EventArgs e) // При загрузке чата
         {
@@ -131,7 +180,7 @@ namespace Client
             }            
         }
 
-        public void listner()
+        private void listner()
         {
             try
             {
@@ -143,7 +192,7 @@ namespace Client
                     byte[] mess = new byte[bytesReceive];
                     Array.Copy(buffer, mess, bytesReceive);
 
-                    string command = AESCrypt.AESDecrypt(mess, session_key).Result;
+                    string command = AESCrypt.AESDecrypt_String(mess, session_key).Result;
                     handleCommand(command);
                 }
             }
@@ -154,7 +203,7 @@ namespace Client
             }
         }
 
-        public void handleCommand(string cmd)
+        private void handleCommand(string cmd)
         {
             string[] commands = cmd.Split('#');
             int countCommands = commands.Length;
@@ -180,6 +229,7 @@ namespace Client
                             label1.Text = UserName;
 
                         });
+
                         continue;
                     }
 
@@ -219,6 +269,13 @@ namespace Client
                         continue;
                     }
 
+                    if (currentCommand.Contains("offline")) // Если адресат не в сети
+                    {
+                        textBox3.Invoke((MethodInvoker)delegate { textBox3.AppendText("Пользователь не в сети\r\n"); });
+
+                        continue;
+                    }
+
                     #endregion
 
                     #region Блок добавления и удаления контактов 
@@ -253,12 +310,12 @@ namespace Client
                         string guest_id = currentCommand.Split('|')[2];
 
                         DialogResult Result = MessageBox.Show($"Вы хотите начать диалог с {guest_name} и добавить его в контакты?", "Начало диалога", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        
+
                         if (Result == DialogResult.Yes)
                             Send($"#acceptfriend|{guest_name}|{guest_id}");
                         else
                             Send($"#renouncement|{guest_name}");
-                        
+
                         continue;
                     }
 
@@ -292,15 +349,6 @@ namespace Client
 
                     #region Блок принятия сообщений
 
-                    if (currentCommand.Contains("key")) // Сохранение ключ собеседника
-                    {
-                        string user = currentCommand.Split('|')[1];
-                        byte[] key = Encoding.Unicode.GetBytes(currentCommand.Split('|')[2]);
-                        keys.Add(user, key);
-
-                        continue;
-                    }
-
                     if (currentCommand.Contains("unknownuser")) // Если не найден адресат
                     {
                         string user = currentCommand.Split('|')[1];
@@ -311,20 +359,29 @@ namespace Client
                     if (currentCommand.Contains("msg")) // Принять сообщение
                     {
                         string from = currentCommand.Split('|')[1];
-                        byte[] key = keys[from];
+                        string message = currentCommand.Split('|')[2];
+                        
+                        DataChat[from] += Environment.NewLine + from + ": " + message;
+                        AddMessage(message, from);
+
+                        continue;
+                    }
+
+                    if (currentCommand.Contains("secmess")) // Принять сообщение c двойной шифровкой
+                    {
+                        string from = currentCommand.Split('|')[1];
 
                         byte[] data = new byte[32768];
                         int bytesReceive = _serverSocket.Receive(data);
                         byte[] encr_mess = new byte[bytesReceive];
-
                         Array.Copy(data, encr_mess, bytesReceive);
 
-                        string mess = AESCrypt.AESDecrypt(encr_mess, key).Result;
+                        byte[] mess = AESCrypt.AESDecrypt_Byte(encr_mess, session_key);
+                        string dec_mess = AESCrypt.AESDecrypt_String(mess, keys[from]).Result; 
 
-                        if (!from.Equals(UserName))
-                            DataChat[from] += Environment.NewLine + from + ": " + mess;
+                        DataChat[from] += Environment.NewLine + from + "**: " + dec_mess;
+                        AddMessage(dec_mess, from, true);
 
-                        AddMessage(mess, from);
                         continue;
                     }
 
@@ -379,7 +436,12 @@ namespace Client
             }
         }
 
-        public void Send(byte[] buffer) // Отправить сообщение на сервер в формате массив байт
+        public void DelKey(string name) // Удаление ключа
+        {
+            keys.Remove(name);
+        }
+
+        private void Send(byte[] buffer, byte[] key = null) // Отправить сообщение на сервер в формате массив байт
         {
             try
             {
@@ -391,7 +453,7 @@ namespace Client
             }
         }
 
-        public void Send(string buffer) // Отправить сообщение на сервер в формате строки
+        private void Send(string buffer) // Отправить сообщение на сервер в формате строки
         {
             try
             {
@@ -404,21 +466,24 @@ namespace Client
             }
         }
 
-        private void AddMessage(string message, string from = "") // Отображение нового сообщения в чате 
+        private void AddMessage(string message, string from, bool ds = false) // Отображение нового сообщения в чате 
         {
-            if (listBox1.SelectedItem != null)
+            if(InvokeRequired) // Защита от чужого потока
             {
-                if (from == label1.Text || from == listBox1.SelectedItem.ToString() || from == "")
+                Invoke(_addMessage, message, from, ds);
+                return;
+            }
+            else if (listBox1.SelectedItem != null)
+            {
+                if (from == label1.Text || from == listBox1.SelectedItem.ToString())
                 {
-                    if (InvokeRequired) // Защита от чужого потока
-                    {
-                        Invoke(_addMessage, message, from);
-                        return;
-                    }
-
                     textBox3.SelectionStart = textBox3.TextLength;
                     textBox3.SelectionLength = message.Length;
-                    textBox3.AppendText($"{from}: {message}" + Environment.NewLine);
+                    
+                    if (ds)
+                        textBox3.AppendText($"{from}**: {message}" + Environment.NewLine);
+                    else
+                        textBox3.AppendText($"{from}: {message}" + Environment.NewLine);
                 }
             }
         }
@@ -441,6 +506,37 @@ namespace Client
 
         #region Блок событий формы 
 
+        private void checkBox1_CheckedChanged(object sender, EventArgs e) // Переключения режима не беспокоить
+        {
+            if (checkBox1.Checked)
+                Send("#silenceon");
+            else
+                Send("#silenceoff");
+        }
+
+        private void button2_Click(object sender, EventArgs e) // Найти и добавить по нику
+        {
+            if (!string.IsNullOrWhiteSpace(textBox1.Text))
+            {
+                string nick = textBox1.Text;
+                Send($"#findbynick|{nick}");
+                textBox1.Text = string.Empty;
+            }
+        }
+
+        private void добавитьКонтактToolStripMenuItem_Click(object sender, EventArgs e) // Найти и добавить по нику
+        {
+            AddingForm add = new AddingForm();
+            add.Owner = this;
+            add.ShowDialog();
+            
+            if (!string.IsNullOrWhiteSpace(Friend))
+            {
+                Send($"#findbynick|{Friend}");
+                Friend = string.Empty;
+            }
+        }
+
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e) // Выбор адресата
         {
             if (listBox1.SelectedItem != null)
@@ -448,15 +544,14 @@ namespace Client
                 if (!string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
                 {
                     textBox2.Enabled = true;
-                    button1.Enabled = true;
+                    button1.Enabled = true;              
 
-                    if (!keys.ContainsKey(listBox1.SelectedItem.ToString()))                   
-                        Send($"#getkey|{listBox1.SelectedItem}");                
+                    string chat, nick = listBox1.SelectedItem.ToString();
 
-                    string chat;
-
-                    if (DataChat.TryGetValue(listBox1.SelectedItem.ToString(), out chat))
+                    if (DataChat.TryGetValue(nick, out chat))
                         LoadMessage(chat);
+
+                    Send($"#isonline|{nick}");
                 }
             }                      
         }
@@ -468,12 +563,24 @@ namespace Client
                 if (!string.IsNullOrWhiteSpace(textBox2.Text) && !string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
                 {
                     string msgData = textBox2.Text;
-                    string to = listBox1.SelectedItem.ToString();
-                    DataChat[to] += Environment.NewLine + UserName + ": " + msgData;
-                    Send($"#message|{to}");
-                    byte[] enc = AESCrypt.AESEncrypt(msgData, keys[to]).Result;
-                    Send(enc);
-                    AddMessage(msgData, UserName);
+                    string to = listBox1.SelectedItem.ToString();              
+
+                    if (keys.ContainsKey(to))
+                    {
+                        DataChat[to] += Environment.NewLine + UserName + "**: " + msgData;
+                        
+                        Send($"#secmess|{to}");
+                        byte[] mess = AESCrypt.AESEncrypt(msgData, keys[to]).Result;
+                        Send(mess);
+                        AddMessage(msgData, UserName, true);
+                    }
+                    else
+                    {
+                        DataChat[to] += Environment.NewLine + UserName + ": " + msgData;
+                        
+                        Send($"#message|{to}|{msgData}");
+                        AddMessage(msgData, UserName);
+                    }                   
                 }
 
                 textBox2.Text = string.Empty;
@@ -490,25 +597,27 @@ namespace Client
                     {
                         string msgData = textBox2.Text;
                         string to = listBox1.SelectedItem.ToString();
-                        DataChat[to] += Environment.NewLine + UserName + ": " + msgData;
-                        Send($"#message|{to}");
-                        byte[] enc = AESCrypt.AESEncrypt(msgData, keys[to]).Result;
-                        Send(enc);
-                        AddMessage(msgData, UserName);
-                    }
 
-                    textBox2.Text = string.Empty;
+                        if (keys.ContainsKey(to))
+                        {
+                            DataChat[to] += Environment.NewLine + UserName + "**: " + msgData;
+
+                            Send($"#secmess|{to}");
+                            byte[] mess = AESCrypt.AESEncrypt(msgData, keys[to]).Result;
+                            Send(mess);
+                            AddMessage(msgData, UserName, true);
+                        }
+                        else
+                        {
+                            DataChat[to] += Environment.NewLine + UserName + ": " + msgData;
+
+                            Send($"#message|{to}|{msgData}");
+                            AddMessage(msgData, UserName);
+                        }
+
+                        textBox2.Text = string.Empty;
+                    } 
                 }
-            }
-        }
-
-        private void button2_Click(object sender, EventArgs e) // Найти и добавить по нику
-        {
-            if(!string.IsNullOrWhiteSpace(textBox1.Text))
-            {
-                string nick = textBox1.Text;
-                Send($"#findbynick|{nick}");
-                textBox1.Text = string.Empty;
             }
         }
 
@@ -522,7 +631,6 @@ namespace Client
             Application.Exit();
         }
 
-        #endregion
-       
+        #endregion       
     }
 }

@@ -7,7 +7,13 @@
     <Compile Update="ChatForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="KeySetForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="RegForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AddingForm.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
