@@ -1,22 +1,19 @@
 ﻿using System;
+using Client.Helpers;
+using Server.Interfaces;
 using System.Windows.Forms;
 
 namespace Client
 {
     public partial class AddingForm : Form
     {
+        IShowInfo showInfo = new ShowInfo();
         public AddingForm()
         {
             InitializeComponent();
         }
 
         private void button1_Click(object sender, EventArgs e)
-        {
-            Owner.Show();
-            this.Close();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(textBox1.Text))
             {
@@ -25,7 +22,7 @@ namespace Client
                 this.Close();
             }     
             else
-                MessageBox.Show("Имя не указано");
+                showInfo.ShowMessage("Имя не указано", 2);
         }
     }
 }

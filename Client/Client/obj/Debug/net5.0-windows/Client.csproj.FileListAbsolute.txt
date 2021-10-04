@@ -77,3 +77,5 @@ C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.pd
 C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.genruntimeconfig.cache
 C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.AddingForm.resources
 C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.KeySetForm.resources
+C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.csproj.AssemblyReference.cache
+C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.Properties.Resources.resources

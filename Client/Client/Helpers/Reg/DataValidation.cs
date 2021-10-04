@@ -5,7 +5,7 @@ namespace Client.Helpers
 {
     public class DataValidation
     {
-        public static int isValid(string name, string email, string password)
+        public static int IsValid(string name, string email, string password)
         {
             if (name.Length < 6)
                 return 1;

@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Client.Helpers;
+using Server.Interfaces;
+using System;
 using System.Security.Cryptography;
-using System.Windows.Forms;
 
 namespace Client.Crypt
 {
     public class RSACrypt
     {
+        static IShowInfo showInfo = new ShowInfo();
+
         static public byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo)
         {
             try
@@ -16,7 +19,7 @@ namespace Client.Crypt
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"The encryption RSA failed - {ex}");
+                showInfo.ShowMessage($"The encryption RSA failed - {ex}", 3);
                 throw new Exception(ex.Message);
             }
         }
@@ -31,7 +34,7 @@ namespace Client.Crypt
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"The decryption RSA failed - {ex}");
+                showInfo.ShowMessage($"The decryption RSA failed - {ex}", 3);
                 throw new Exception(ex.Message);
             }
         }

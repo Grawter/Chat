@@ -1,11 +1,13 @@
-﻿using Client.Helpers;
-using System;
+﻿using System;
+using Client.Helpers;
+using Server.Interfaces;
 using System.Windows.Forms;
 
 namespace Client
 {
     public partial class RegForm : Form
     {
+        IShowInfo showInfo = new ShowInfo();
         bool attempt = false;
         ChatForm Chat;
 
@@ -46,7 +48,7 @@ namespace Client
                 return;
             }
 
-            switch (DataValidation.isValid(UserName, Email, Password))
+            switch (DataValidation.IsValid(UserName, Email, Password))
             {
                 case 1:
                     label5.Text = "Логин меньше 6 символов";
@@ -58,14 +60,13 @@ namespace Client
 
                 case 3:
                     label5.Text = "Пароли не соответствует формату";
-                    MessageBox.Show("Пароль должен содержать не менее 6 символов, включая минимум один формата [a-z],[A-Z],[0-9] и спец. символ");
+                    showInfo.ShowMessage("Пароль должен содержать не менее 6 символов, включая минимум один формата [a-z],[A-Z],[0-9] и спец. символ");
                     return;
             }
 
             if (Chat == null)
             {
-                Chat = new ChatForm();
-                Chat.Owner = this;
+                Chat = new ChatForm() { Owner = this };
             }
 
             Chat.UserName = UserName;

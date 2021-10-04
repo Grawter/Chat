@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Server.Crypt;
 using Server.Helpers;
-using System;
 
 namespace Server.Models
 {
@@ -14,6 +14,7 @@ namespace Server.Models
         {
             Database.EnsureCreated();
         }
+
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
             Database.EnsureCreated();
@@ -23,6 +24,7 @@ namespace Server.Models
         {
             optionsBuilder.UseSqlite("Data Source=usersdata.db");
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             byte[] salt1 = Hash.GenerateSalt();

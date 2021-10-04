@@ -1,13 +1,16 @@
-﻿using System;
+﻿using Client.Helpers;
+using Server.Interfaces;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Client.Crypt
 {
     public class AESCrypt
     {
+        static IShowInfo showInfo = new ShowInfo();
+
         public static async Task<byte[]> AESEncrypt(string message, byte[] key)
         {
             try
@@ -39,44 +42,7 @@ namespace Client.Crypt
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"The encryption string AES failed - {ex}");
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public static byte[] AESEncrypt(byte[] message, byte[] key)
-        {
-            try
-            {
-                byte[] enc_byte;
-
-                using (Aes aes = Aes.Create())
-                {
-                    aes.GenerateIV();
-                    aes.Key = key;
-
-                    using (MemoryStream memStream = new MemoryStream())
-                    {
-                        memStream.Write(aes.IV, 0, aes.IV.Length);
-
-                        using (CryptoStream cryptoStream = new CryptoStream(memStream, aes.CreateEncryptor(aes.Key, aes.IV), CryptoStreamMode.Write))
-                        {
-                            using (StreamWriter encryptWriter = new StreamWriter(cryptoStream))
-                            {
-                                cryptoStream.Write(message, 0, message.Length);
-                                cryptoStream.FlushFinalBlock();
-                            }
-                        }
-
-                        enc_byte = memStream.ToArray();
-                    }
-                }
-
-                return enc_byte;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"The encryption byte AES failed - {ex}");
+                showInfo.ShowMessage($"The encryption string AES failed - {ex}", 3);
                 throw new Exception(ex.Message);
             }
         }
@@ -117,13 +83,13 @@ namespace Client.Crypt
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"The decryption string AES failed - {ex}");
+                showInfo.ShowMessage($"The decryption string AES failed - {ex}", 3);
                 throw new Exception(ex.Message);
             }
 
         }
 
-        public static byte[] AESDecrypt_Byte(byte[] enc_mess, byte[] key)
+        public static async Task<byte[]> AESDecrypt_Byte(byte[] enc_mess, byte[] key)
         {
             try
             {
@@ -145,8 +111,8 @@ namespace Client.Crypt
                     {
                         using (var cryptoStream = new CryptoStream(ms, aes.CreateDecryptor(key, iv), CryptoStreamMode.Write))
                         {
-                            cryptoStream.Write(mess, 0, mess.Length);
-                            cryptoStream.FlushFinalBlock();
+                            await cryptoStream.WriteAsync(mess, 0, mess.Length);
+                            await cryptoStream.FlushFinalBlockAsync();
                         }
 
                         decryptedMessage = ms.ToArray();
@@ -159,7 +125,7 @@ namespace Client.Crypt
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"The decryption byte AES failed - {ex}");
+                showInfo.ShowMessage($"The decryption byte AES failed - {ex}",3 );
                 throw new Exception(ex.Message);
             }
 

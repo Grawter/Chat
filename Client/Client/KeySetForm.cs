@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Security.Cryptography;
+using Server.Interfaces;
+using Client.Helpers;
+using Client.Helpers.KeySet;
 
 namespace Client
 {
     public partial class KeySetForm : Form
     {
+        IShowInfo showInfo = new ShowInfo();
         public string Username
         {
             get { return username; }
@@ -29,59 +33,24 @@ namespace Client
         {
             label2.Text = username;
 
-            if (current_key != null)
-            {
-                string key_str = "";
-                foreach (var item in current_key)
-                {
-                    if (item < 10)
-                        key_str += "00" + item;
-                    else if (item >= 10 && item < 100)
-                        key_str += "0" + item;
-                    else
-                        key_str += item;
-                }
-
-                maskedTextBox1.Text = key_str;
-            }       
+            if (current_key != null)        
+                maskedTextBox1.Text = ByteConvStr.ByteToStr(current_key);                  
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Owner.Show();
-            this.Close();
+            Aes aes = Aes.Create();
+
+            maskedTextBox1.Text = ByteConvStr.ByteToStr(aes.Key);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Aes aes = Aes.Create();
-
-            string key_str = "";
-            foreach (var item in aes.Key)
-            {
-                if (item < 10)
-                    key_str += "00" + item;
-                else if (item >= 10 && item < 100)
-                    key_str += "0" + item;
-                else
-                    key_str += item;
-            }
-
-            maskedTextBox1.Text = key_str;
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            string[] mass = maskedTextBox1.Text.Split(".");
-            byte[] key_mass = new byte[mass.Length];
+            string[] str_mass = maskedTextBox1.Text.Split(".");
 
             try
             {
-                for (int i = 0; i < mass.Length; i++)
-                {
-                    key_mass[i] = byte.Parse(mass[i]);
-                }
-
+                byte[] key_mass = ByteConvStr.StrToByte(str_mass);
                 (Owner as ChatForm).Mass_k = key_mass;
 
                 Owner.Show();
@@ -89,20 +58,24 @@ namespace Client
             }
             catch (OverflowException)
             {
-                MessageBox.Show("Указывайте цифры от 0 до 255");
+                showInfo.ShowMessage("Указывайте цифры от 0 до 255");
             }
             catch (FormatException)
             {
-                MessageBox.Show("Ключ не указан, либо указан не полностью");
+                showInfo.ShowMessage("Ключ не указан, либо указан не полностью", 2);
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            (Owner as ChatForm).DelKey(Username);
+            maskedTextBox1.Text = "";
+            showInfo.ShowMessage("Ключ отключён");         
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            (Owner as ChatForm).DelKey(Username);
-            maskedTextBox1.Text = "";
-            MessageBox.Show("Ключ отключён");         
+            Clipboard.SetText(maskedTextBox1.Text);
         }
-      
     }
 }

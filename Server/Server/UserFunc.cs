@@ -3,59 +3,55 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using Server.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using Server.Crypt;
 using System.Text;
 using Server.Helpers;
+using Server.Interfaces;
 
 namespace Server
 {
     public class UsersFunc
     {
-        private User me;
-
-        public User Me
-        {
-            get { return me; }
-        }
-
-        private ApplicationContext db;
-
         private Socket _userHandle;
+
+        private Thread _userThread;
 
         RSAParameters publicKey;
         RSAParameters privateKey;
 
         byte[] session_key;
 
-        private Thread _userThread;
+        IShowInfo showInfo = new ShowInfo();
+
+        public User Me
+        {
+            get { return me; }
+        }
+        private User me;
 
         private bool Handshake = false;     
-
         private bool AuthSuccess = false;
-
         private bool Silence_mode = false;
 
         public UsersFunc(Socket handle)
         {
-            //db = new ApplicationContext();
-
             _userHandle = handle;
 
             RSA RSA = RSA.Create();
-
             publicKey = RSA.ExportParameters(false);
             privateKey = RSA.ExportParameters(true);
             
             Send(publicKey.Modulus);
-            
-            _userThread = new Thread(listner);
-            _userThread.IsBackground = true;
+
+            _userThread = new Thread(Listner)
+            {
+                IsBackground = true
+            };
             _userThread.Start();      
         }
 
-        private void listner()
+        private void Listner()
         {
             try
             {
@@ -69,11 +65,8 @@ namespace Server
 
                     if (Handshake)
                     {
-                        if (db == null)
-                            db = new ApplicationContext();
-
                         string command = AESCrypt.AESDecrypt(mess, session_key).Result;
-                        handleCommand(command); // Отправка сообщения на обработку
+                        HandleCommand(command); // Отправка сообщения на обработку
                     }   
                     else
                     {
@@ -86,13 +79,13 @@ namespace Server
             catch (Exception exp)
             {
                 if(me != null)
-                    Console.WriteLine($"{Me.UserName} - Ошибка блока прослушивания: " + exp.Message);
+                    showInfo.ShowMessage($"{Me.UserName} - Ошибка блока прослушивания: " + exp.Message);
                 
                 Server.EndUser(this);
             }
         }
 
-        private void handleCommand(string cmd)
+        private void HandleCommand(string cmd)
         {
             try
             {
@@ -114,73 +107,61 @@ namespace Server
                         {
                             string[] info = currentCommand.Split('|');
 
-                            var member = db.Users.FirstOrDefault(u => u.UserName == info[1]);
+                            int status = Server.ContainsUserGlobal(info[1], info[2]);
 
-                            if (member == null)
+                            switch (status)
                             {
-                                var member2 = db.Users.FirstOrDefault(u => u.Email == info[2]);
-
-                                if (member2 == null)
-                                {
-                                    byte[] salt = Hash.GenerateSalt();
-
-                                    me = new User
-                                    {
-                                        UserName = info[1],
-                                        Email = info[2],
-                                        Password = HashManager.GenerateHash(info[3], salt),
-                                        Salt = salt,
-                                        PrivateID = Guid.NewGuid().ToString()
-                                    };
-
-                                    Server.NewUser(this);
-
-                                    db.Users.Add(me);
-                                    db.SaveChanges();
-
-                                    AuthSuccess = true;
-
-                                    Send("#connect");
-                                }
-                                else
+                                case 1:
+                                    Send("#usernamenotaccess");
+                                     continue;
+                                case 2:
                                     Send("#emailnotaccess");
-                            }
-                            else
-                                Send("#usernamenotaccess");
+                                    continue;
+                            }                      
 
+                            byte[] salt = Hash.GenerateSalt();
+
+                            me = new User
+                            {
+                                UserName = info[1],
+                                Email = info[2],
+                                Password = HashManager.GenerateHash(info[3], salt),
+                                Salt = salt,
+                                PrivateID = Guid.NewGuid().ToString()
+                            };
+
+                            Server.NewUser(this);
+
+                            Server.AddUserGlobal(me);
+
+                            AuthSuccess = true;
+
+                            Send("#connect");
                         }
                         else if (currentCommand.Contains("login"))
                         {
                             string[] info = currentCommand.Split('|');
 
-                            var member = db.Users.Include(u => u.Friends).FirstOrDefault(u => u.UserName == info[1]);
+                            var member = Server.GetUserGlobalByNick(info[1]).Result;
+                            if (member == null)
+                            {
+                                Send("#logfault");
+                                continue;
+                            }
 
-                            if (member != null)
-                            {                          
-                                if (HashManager.Access(info[2], member.Salt, member.Password))
-                                {
-                                    me = member;
-                                    Server.NewUser(this);
+                            if (HashManager.Access(info[2], member.Salt, member.Password))
+                            {
+                                me = member;
+                                Server.NewUser(this);
 
-                                    AuthSuccess = true;
+                                AuthSuccess = true;
 
-                                    Send("#connect");
+                                Send("#connect");
 
-                                    string userList = "";
+                                string userList = FriendsList.GetList(ref me);
 
-                                    foreach (var fr in Me.Friends)
-                                    {
-                                        if (fr == Me.Friends.Last())
-                                            userList += fr.Name;
-                                        else
-                                            userList += fr.Name + ",";
-                                    }
-
-                                    if (userList != "")
-                                        Send("#userlist|" + userList);
-                                }
-                                else
-                                    Send("#logfault");
+                                if (userList != null)
+                                    Send("#userlist|" + userList);
                             }
                             else
                                 Send("#logfault");
@@ -229,9 +210,7 @@ namespace Server
                         {
                             me.Friends.Add(new Friend { Name = friendtNick });
                             friend.Me.Friends.Add(new Friend { Name = Me.UserName });
-
-                            db.Users.Update(friend.Me);
-                            db.SaveChanges();
+                            Server.SaveChangeGlobal();
 
                             Send($"#addtolist|{friendtNick}");
                             friend.Send($"#addtolist|{Me.UserName}");
@@ -252,31 +231,14 @@ namespace Server
                     }
 
                     if (currentCommand.Contains("delete")) // Удаление из друзей
-                    {
-                        using (var db = new ApplicationContext())
-                        {
-                            string unfriendlyNick = currentCommand.Split('|')[1];
+                    {  
+                        string unfriendlyNick = currentCommand.Split('|')[1];
+                        Server.RemoveFriendShip(Me.UserName, unfriendlyNick);
 
-                            me.Friends.Remove(me.Friends.FirstOrDefault(uf => uf.Name == unfriendlyNick));
-
-                            for (int j = 0; j < db.Friends.Count(fr => fr.Name == unfriendlyNick && fr.UserId == me.Id); j++)
-                            {
-                                db.Friends.Remove(db.Friends.FirstOrDefault(fr => fr.Name == unfriendlyNick && fr.UserId == me.Id));
-                            }
-
-                            var unfriend = db.Users.Include(u => u.Friends).FirstOrDefault(uf => uf.UserName == unfriendlyNick);
-                            unfriend.Friends.Remove(unfriend.Friends.FirstOrDefault(uf => uf.Name == Me.UserName));
-
-                            db.SaveChanges();
-
-                            UsersFunc unfr = Server.GetUserByNick(unfriendlyNick);
-                            if (unfr != null)
-                            {
-                                unfr.me = unfriend;
-                                unfr.Send($"#remtolist|{Me.UserName}");
-                            }             
-                        }
-
+                        UsersFunc unfr = Server.GetUserByNick(unfriendlyNick);
+                        if (unfr != null)
+                            unfr.Send($"#remtolist|{Me.UserName}");
+                                        
                         continue;
                     }
 
@@ -295,9 +257,8 @@ namespace Server
                     if (currentCommand.Contains("isonline")) // Проверка онлайна
                     {
                         string friend = currentCommand.Split('|')[1];
-                        UsersFunc targetUser = Server.GetUserByNick(friend);
 
-                        if (targetUser == null)
+                        if (!Server.ContainsNick(friend))
                             Send($"#offline");
 
                         continue;
@@ -354,8 +315,8 @@ namespace Server
 
             }
             catch (Exception exp) 
-            { 
-                Console.WriteLine($"{Me.UserName} - Ошибка обработчика команд: " + exp.Message); 
+            {
+                showInfo.ShowMessage($"{Me.UserName} - Ошибка обработчика команд: " + exp.Message); 
             }
         }
 
@@ -370,7 +331,7 @@ namespace Server
             }
             catch (Exception exp)
             {
-                Console.WriteLine($"{Me.UserName} - Ошибка при отправке строки: " + exp.Message);
+                showInfo.ShowMessage($"{Me.UserName} - Ошибка при отправке строки: " + exp.Message);
             }
         }
 
@@ -382,7 +343,7 @@ namespace Server
             }
             catch (Exception exp) 
             {
-                Console.WriteLine($"{Me.UserName} - Ошибка при отправке массива байт: " + exp.Message);
+                showInfo.ShowMessage($"{Me.UserName} - Ошибка при отправке массива байт: " + exp.Message);
             }
         }     
 
@@ -394,7 +355,7 @@ namespace Server
             }
             catch (Exception exp) 
             {
-                Console.WriteLine($"{Me.UserName} - Ошибка при завершении сессии: " + exp.Message);
+                showInfo.ShowMessage($"{Me.UserName} - Ошибка при завершении сессии: " + exp.Message);
             }
 
         }

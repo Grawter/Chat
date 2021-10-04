@@ -23,8 +23,7 @@ namespace Client
         {
             if (Reg == null)
             {
-                Reg = new RegForm();
-                Reg.Owner = this;
+                Reg = new RegForm() { Owner = this };
             }        
 
             Reg.Show();
