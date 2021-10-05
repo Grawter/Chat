@@ -185,7 +185,7 @@ namespace Server
                         string TargetNick = currentCommand.Split('|')[1];
 
                         UsersFunc targetUser = Server.GetUserByNick(TargetNick);
-                        if (targetUser == null || Me.Friends.FirstOrDefault(f => f.Name == TargetNick) != null || targetUser.Silence_mode)
+                        if (targetUser == null || Me.Friends.Any(f => f.Name == TargetNick) || targetUser.Silence_mode)
                         {
                             Send($"#failusersuccess|{TargetNick}");
                         }
@@ -271,41 +271,18 @@ namespace Server
                     if (currentCommand.Contains("message")) // Обработка отправленного сообщения
                     {
                         string TargetName = currentCommand.Split('|')[1];
-                        string Content = currentCommand.Split('|')[2];
+                        string mode = currentCommand.Split('|')[2];
+                        string Content = currentCommand.Split('|')[3];
 
                         UsersFunc targetUser = Server.GetUserByNick(TargetName);
 
-                        if (targetUser == null || Me.Friends.FirstOrDefault(fr => fr.Name == TargetName) == null)
+                        if (targetUser == null || !Me.Friends.Any(fr => fr.Name == TargetName))
                         {
                             Send($"#unknownuser|{TargetName}");
                             continue;
                         }
 
-                        targetUser.Send($"#msg|{Me.UserName}|{Content}");
-
-                        continue;
-                    }
-
-                    if (currentCommand.Contains("secmess")) // Обработка отправленного сообщения с двойной шифровкой
-                    {
-                        string TargetName = currentCommand.Split('|')[1];
-                        
-                        UsersFunc targetUser = Server.GetUserByNick(TargetName);
-
-                        if (targetUser == null || Me.Friends.FirstOrDefault(fr => fr.Name == TargetName) == null)
-                        {
-                            Send($"#unknownuser|{TargetName}");
-                            continue;
-                        }
-
-                        byte[] mess = new byte[32768];
-                        int bytesReceive = _userHandle.Receive(mess);
-                        byte[] enc_mess = new byte[bytesReceive];
-                        Array.Copy(mess, enc_mess, bytesReceive);
-
-                        byte[] secure_mess = AESCrypt.AESEncrypt(enc_mess, targetUser.session_key).Result;
-                        targetUser.Send($"#secmess|{Me.UserName}");
-                        targetUser.Send(secure_mess);
+                        targetUser.Send($"#msg|{Me.UserName}|{mode}|{Content}");
 
                         continue;
                     }

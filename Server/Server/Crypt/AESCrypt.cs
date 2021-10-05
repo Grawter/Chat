@@ -44,43 +44,6 @@ namespace Server.Crypt
             }
         }
 
-        public static async Task<byte[]> AESEncrypt(byte[] message, byte[] key)
-        {
-            try
-            {
-                byte[] enc_byte;
-
-                using (Aes aes = Aes.Create())
-                {
-                    aes.GenerateIV();
-                    aes.Key = key;
-
-                    using (MemoryStream memStream = new MemoryStream())
-                    {
-                        memStream.Write(aes.IV, 0, aes.IV.Length);
-
-                        using (CryptoStream cryptoStream = new CryptoStream(memStream, aes.CreateEncryptor(aes.Key, aes.IV), CryptoStreamMode.Write))
-                        {
-                            using (StreamWriter encryptWriter = new StreamWriter(cryptoStream))
-                            {
-                                await cryptoStream.WriteAsync(message, 0, message.Length);
-                                await cryptoStream.FlushFinalBlockAsync();
-                            }
-                        }
-
-                        enc_byte = memStream.ToArray();
-                    }
-                }
-
-                return enc_byte;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"The encryption byte AES failed - {ex}");
-                throw new Exception(ex.Message);
-            }
-        }
-
         public static async Task <string> AESDecrypt(byte[] enc_mess, byte[] key)
         {
             try

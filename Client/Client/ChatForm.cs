@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 using System.Net.Sockets;
@@ -365,28 +364,22 @@ namespace Client
                     if (currentCommand.Contains("msg")) // Принять сообщение
                     {
                         string from = currentCommand.Split('|')[1];
-                        string message = currentCommand.Split('|')[2];
+                        int mode = int.Parse(currentCommand.Split('|')[2]);
+                        string message = currentCommand.Split('|')[3];
                         
-                        DataChat[from] += Environment.NewLine + from + ": " + message;
-                        AddMessage(message, from);
+                        if (keys.ContainsKey(from) && mode == 1)
+                        {
+                            byte[] enc_mass = Convert.FromBase64String(message);
+                            string dec_mess = AESCrypt.AESDecrypt_String(enc_mass, keys[from]).Result;
 
-                        continue;
-                    }
-
-                    if (currentCommand.Contains("secmess")) // Принять сообщение c двойной шифровкой
-                    {
-                        string from = currentCommand.Split('|')[1];
-
-                        byte[] data = new byte[32768];
-                        int bytesReceive = _serverSocket.Receive(data);
-                        byte[] encr_mess = new byte[bytesReceive];
-                        Array.Copy(data, encr_mess, bytesReceive);
-
-                        byte[] mess = AESCrypt.AESDecrypt_Byte(encr_mess, session_key).Result;
-                        string dec_mess = AESCrypt.AESDecrypt_String(mess, keys[from]).Result; 
-
-                        DataChat[from] += Environment.NewLine + from + "**: " + dec_mess;
-                        AddMessage(dec_mess, from, true);
+                            DataChat[from] += Environment.NewLine + from + "**: " + dec_mess;
+                            AddMessage(dec_mess, from, true);
+                        }
+                        else
+                        {
+                            DataChat[from] += Environment.NewLine + from + ": " + message;
+                            AddMessage(message, from);
+                        }
 
                         continue;
                     }
@@ -483,16 +476,15 @@ namespace Client
                 {
                     DataChat[to] += Environment.NewLine + UserName + "**: " + msgData;
 
-                    Send($"#secmess|{to}");
-                    byte[] mess = AESCrypt.AESEncrypt(msgData, keys[to]).Result;
-                    Send(mess);
+                    string crp_mess = Convert.ToBase64String(AESCrypt.AESEncrypt(msgData, keys[to]).Result);
+                    Send($"#message|{to}|1|{crp_mess}");
                     AddMessage(msgData, UserName, true);
                 }
                 else
                 {
                     DataChat[to] += Environment.NewLine + UserName + ": " + msgData;
 
-                    Send($"#message|{to}|{msgData}");
+                    Send($"#message|{to}|0|{msgData}");
                     AddMessage(msgData, UserName);
                 }
             }
