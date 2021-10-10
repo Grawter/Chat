@@ -150,7 +150,6 @@ C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.GeneratedM
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.AssemblyInfoInputs.cache
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.AssemblyInfo.cs
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.csproj.CoreCompileInputs.cache
-C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.csproj.CopyComplete
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.dll
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\ref\Server.dll
 C:\Users\termi\Desktop\MainChat\Server\Server\obj\Debug\net5.0\Server.pdb

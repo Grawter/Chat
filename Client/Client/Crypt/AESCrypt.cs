@@ -1,6 +1,6 @@
 ﻿using System;
 using Client.Helpers;
-using Server.Interfaces;
+using Client.Interfaces;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -47,7 +47,7 @@ namespace Client.Crypt
             }
         }
 
-        public static async Task<string> AESDecrypt_String(byte[] enc_mess, byte[] key)
+        public static async Task<string> AESDecrypt(byte[] enc_mess, byte[] key)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace Client.Crypt
             }
             catch (Exception)
             {
-                throw new Exception("Было принято сообщение, но его удалось расшифровать");
+                throw new Exception("Было принято сообщение, но его удалось не расшифровать");
                 //showInfo.ShowMessage($"The decryption string AES failed - {ex}", 3);
                 //throw new Exception(ex.Message);
             }

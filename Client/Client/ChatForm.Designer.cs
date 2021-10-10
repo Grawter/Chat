@@ -30,6 +30,7 @@ namespace Client
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChatForm));
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.listBox1 = new System.Windows.Forms.ListBox();
@@ -86,10 +87,10 @@ namespace Client
             // button1
             // 
             this.button1.Enabled = false;
-            this.button1.Image = global::Client.Properties.Resources.Send;
+            this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
             this.button1.Location = new System.Drawing.Point(415, 377);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(55, 34);
+            this.button1.Size = new System.Drawing.Size(70, 34);
             this.button1.TabIndex = 7;
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);

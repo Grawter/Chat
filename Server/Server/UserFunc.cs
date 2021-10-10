@@ -5,7 +5,6 @@ using System.Threading;
 using Server.Models;
 using System.Security.Cryptography;
 using Server.Crypt;
-using System.Text;
 using Server.Helpers;
 using Server.Interfaces;
 
@@ -151,6 +150,12 @@ namespace Server
 
                             if (HashManager.Access(info[2], member.Salt, member.Password))
                             {
+                                if (Server.ContainsNick(info[1]))
+                                {
+                                    Send("#sessionbusy");
+                                    continue;
+                                }
+
                                 me = member;
                                 Server.NewUser(this);
 

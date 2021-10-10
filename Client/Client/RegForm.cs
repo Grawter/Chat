@@ -1,6 +1,6 @@
 ﻿using System;
 using Client.Helpers;
-using Server.Interfaces;
+using Client.Interfaces;
 using System.Windows.Forms;
 
 namespace Client

@@ -1,6 +1,6 @@
 ﻿
 
-namespace Server.Interfaces
+namespace Client.Interfaces
 {
     interface IShowInfo
     {

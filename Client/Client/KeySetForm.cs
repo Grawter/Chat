@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Security.Cryptography;
-using Server.Interfaces;
+using Client.Interfaces;
 using Client.Helpers;
 using Client.Helpers.KeySet;
 

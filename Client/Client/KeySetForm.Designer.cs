@@ -29,6 +29,7 @@ namespace Client
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(KeySetForm));
             this.label1 = new System.Windows.Forms.Label();
             this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
             this.button1 = new System.Windows.Forms.Button();
@@ -98,7 +99,7 @@ namespace Client
             // 
             // button4
             // 
-            this.button4.Image = global::Client.Properties.Resources.Clipboard;
+            this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
             this.button4.Location = new System.Drawing.Point(568, 84);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(36, 42);

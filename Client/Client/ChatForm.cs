@@ -6,7 +6,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Collections.Generic;
 using Client.Crypt;
-using Server.Interfaces;
+using Client.Interfaces;
 using Client.Helpers;
 
 namespace Client
@@ -197,13 +197,13 @@ namespace Client
                     byte[] mess = new byte[bytesReceive];
                     Array.Copy(buffer, mess, bytesReceive);
 
-                    string command = AESCrypt.AESDecrypt_String(mess, session_key).Result;
+                    string command = AESCrypt.AESDecrypt(mess, session_key).Result;
                     handleCommand(command);
                 }
             }
             catch
             {
-                showInfo.ShowMessage("Связь с сервером прервана", 3);
+                showInfo.ShowMessage("Связь с сервером прервана");
                 Application.Exit();
             }
         }
@@ -226,13 +226,13 @@ namespace Client
 
                     if (currentCommand.Contains("connect")) // При удачной идентификации
                     {
+                        keys = new Dictionary<string, byte[]>();
+                        DataChat = new Dictionary<string, string>();
+
                         Invoke((MethodInvoker)delegate // Обеспечение доступа к элементам формы в потоке, в котором они были созданы
                         {
-                            keys = new Dictionary<string, byte[]>();
-                            DataChat = new Dictionary<string, string>();
                             textBox3.Text = "Подключение выполнено!";
                             label1.Text = UserName;
-
                         });
 
                         continue;
@@ -267,6 +267,18 @@ namespace Client
                         Invoke((MethodInvoker)delegate
                         {
                             (Owner as AuthForm).Status = "Неверный логин или пароль";
+                            Owner.Show();
+                            this.Hide();
+                        });
+
+                        continue;
+                    }
+
+                    if (currentCommand.Contains("sessionbusy")) // Неверные данные для входа
+                    {
+                        Invoke((MethodInvoker)delegate
+                        {
+                            (Owner as AuthForm).Status = "Сессия занята";
                             Owner.Show();
                             this.Hide();
                         });
@@ -327,7 +339,7 @@ namespace Client
                     if (currentCommand.Contains("failusersuccess")) // Отрицательный ответ для того, кто отправил запрос дружбы
                     {
                         string targetUser = currentCommand.Split('|')[1];
-                        showInfo.ShowMessage($"Пользователь {targetUser} не может быть добавлен");
+                        showInfo.ShowMessage($"Пользователь {targetUser} не может быть добавлен", 2);
                         continue;
                     }
 
@@ -357,7 +369,7 @@ namespace Client
                     if (currentCommand.Contains("unknownuser")) // Если не найден адресат
                     {
                         string user = currentCommand.Split('|')[1];
-                        showInfo.ShowMessage("Сообщение не дошло до " + user);
+                        showInfo.ShowMessage("Сообщение не дошло до " + user, 2);
                         continue;
                     }
 
@@ -370,13 +382,16 @@ namespace Client
                         if (keys.ContainsKey(from) && mode == 1)
                         {
                             byte[] enc_mass = Convert.FromBase64String(message);
-                            string dec_mess = AESCrypt.AESDecrypt_String(enc_mass, keys[from]).Result;
+                            string dec_mess = AESCrypt.AESDecrypt(enc_mass, keys[from]).Result;
 
                             DataChat[from] += Environment.NewLine + from + "**: " + dec_mess;
                             AddMessage(dec_mess, from, true);
                         }
                         else
                         {
+                            if (!message.EndsWith("\r\n"))
+                                message += "\r\n";
+
                             DataChat[from] += Environment.NewLine + from + ": " + message;
                             AddMessage(message, from);
                         }
@@ -465,15 +480,15 @@ namespace Client
             }
         }
 
-        private void SendMess()
+        private void SendMess(string msgData, string to)
         {
             if (!string.IsNullOrWhiteSpace(textBox2.Text) && !string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
             {
-                string msgData = textBox2.Text;
-                string to = listBox1.SelectedItem.ToString();
+                if (!msgData.EndsWith("\r\n"))
+                    msgData += "\r\n";
 
                 if (keys.ContainsKey(to))
-                {
+                {            
                     DataChat[to] += Environment.NewLine + UserName + "**: " + msgData;
 
                     string crp_mess = Convert.ToBase64String(AESCrypt.AESEncrypt(msgData, keys[to]).Result);
@@ -571,8 +586,11 @@ namespace Client
         {
             if (listBox1.SelectedItem != null)
             {
-                SendMess();
-            }               
+                string msgData = textBox2.Text, to = listBox1.SelectedItem.ToString();
+                SendMess(msgData, to);
+            }    
+            else
+                showInfo.ShowMessage("Адресат не выбран", 2);
         }
 
         private void textBox2_KeyUp(object sender, KeyEventArgs e) // Отправка сообщения через Enter       
@@ -581,17 +599,19 @@ namespace Client
             {
                 if (listBox1.SelectedItem != null)
                 {
-                    SendMess();
+                    string msgData = textBox2.Text, to = listBox1.SelectedItem.ToString();
+                    SendMess(msgData, to);
                 }
+                else
+                    showInfo.ShowMessage("Адресат не выбран", 2);
             }
         }
 
         private void ChatForm_FormClosing_1(object sender, FormClosingEventArgs e) // При закрытии формы
         {
-            if (_serverSocket.Connected)
-            {
+            if (_serverSocket.Connected)           
                 Send($"#endsession");
-            }
+            
 
             Application.Exit();
         }

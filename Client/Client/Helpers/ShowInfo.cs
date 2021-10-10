@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using Server.Interfaces;
+using Client.Interfaces;
 
 namespace Client.Helpers
 {
