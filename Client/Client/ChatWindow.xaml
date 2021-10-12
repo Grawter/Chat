@@ -1,0 +1,77 @@
+﻿<Window x:Class="Client.ChatWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client"
+        mc:Ignorable="d"
+        Title="Месседжер" Height="450" Width="800" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Icon="\Resources\ChatIcon.ico">
+    <Grid Background="#FF7CD434">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" ></ColumnDefinition>
+            <ColumnDefinition Width="0.4*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition  Height="0.2*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Column="0" Grid.Row="0"  BorderBrush="Black"  BorderThickness="0 0 1 0" />
+        <Border Grid.Column="0" Grid.Row="1"  BorderBrush="Black"  BorderThickness="0 0 1 0" />
+
+        <TextBlock Name="TBlock1" HorizontalAlignment="Right" Margin="0 0 20 0" Text="Ник" FontSize="19" FontStyle="Italic" FontWeight="Bold" Foreground="#FF1856C3" />
+        <Canvas Grid.Column="0" Grid.Row="0">
+            <TextBlock Name="TBlock2" Canvas.Top="5" Canvas.Left="10" Text="Чат:" FontSize="15" />
+            <TextBox Name="TB1"  Canvas.Top="35" Canvas.Left="20" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" FontSize="13" Width="530" Height="310"/>
+        </Canvas>
+
+        <Canvas Grid.Column="0" Grid.Row="1">
+
+            <Grid Canvas.Top="17" Canvas.Left="20">
+                <TextBox Name="TB2" TextWrapping="Wrap" AcceptsReturn="True" Width="450" Height="38" FontSize="13" />
+                <TextBlock IsHitTestVisible="False" Text="Введите сообщение..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray" FontSize="15">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=TB2}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+            
+            <Button Name="button1" Width="76" Height="38" Canvas.Top="17" Canvas.Left="476" Background="WhiteSmoke" Click="Button_Click_2" >
+                <Image Source="\Resources\Send.png" Height="30" Width="40" />
+            </Button>
+            
+        </Canvas>
+
+        <Canvas Grid.Column="1" Grid.Row="0" Background="#FFA4CDFF">
+            <ListBox Name="listBox1" Width="190" Height="320" Canvas.Top="35" Canvas.Left="20" Background="WhiteSmoke" SelectionChanged="listBox1_SelectedIndexChanged" >
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Установить ключ" Click="MenuItem_Click_1"></MenuItem>
+                        <MenuItem Header="Удалить" Click="MenuItem_Click_2"></MenuItem>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
+        </Canvas>
+
+        <TextBlock Grid.Column="1" Grid.Row="0" Text="Друзья:" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,5,0,0" FontSize="15"/>
+        <Canvas Grid.Column="1" Grid.Row="1"  Background="#FFA4CDFF">
+            <CheckBox Name="checkBox1" Content="Не беспокоить" Canvas.Top="25" Canvas.Left="20" Click="CheckBox_Click"/>
+            <Button Height="40" Width="40" Canvas.Left="168" Canvas.Top="13" Background="WhiteSmoke" Click="Button_Click_1">
+                <Image Source="\Resources\Plus.png" Height="30" Width="40" />
+            </Button>
+        </Canvas>
+
+    </Grid>
+</Window>

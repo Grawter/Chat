@@ -67,7 +67,7 @@ namespace Client.Crypt
             {
                 RSA RSA = RSA.Create();
                 RSA.ImportParameters(RSAKeyInfo);
-                byte [] message = RSA.Decrypt(DataToDecrypt, RSAEncryptionPadding.Pkcs1);
+                byte[] message = RSA.Decrypt(DataToDecrypt, RSAEncryptionPadding.Pkcs1);
                 return Encoding.Unicode.GetString(message);
             }
             catch (Exception)

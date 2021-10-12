@@ -1,20 +1,40 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
   <ItemGroup>
-    <Compile Update="AuthForm.cs">
-      <SubType>Form</SubType>
+    <ApplicationDefinition Update="App.xaml">
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="AddingWindow.xaml.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Update="ChatForm.cs">
-      <SubType>Form</SubType>
+    <Compile Update="AuthWindow.xaml.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Update="KeySetForm.cs">
-      <SubType>Form</SubType>
+    <Compile Update="KeySetWindow.xaml.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Update="RegForm.cs">
-      <SubType>Form</SubType>
+    <Compile Update="RegWindow.xaml.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Update="AddingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="AddingWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="AuthWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="ChatWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="KeySetWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="RegWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

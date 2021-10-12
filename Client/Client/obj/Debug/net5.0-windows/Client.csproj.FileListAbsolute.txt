@@ -5,10 +5,16 @@ C:\Users\termi\source\repos\Client\Client\bin\Debug\net5.0-windows\Client.runtim
 C:\Users\termi\source\repos\Client\Client\bin\Debug\net5.0-windows\Client.dll
 C:\Users\termi\source\repos\Client\Client\bin\Debug\net5.0-windows\ref\Client.dll
 C:\Users\termi\source\repos\Client\Client\bin\Debug\net5.0-windows\Client.pdb
-C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client.AuthForm.resources
-C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client.ChatForm.resources
-C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client.RegForm.resources
-C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client.csproj.GenerateResource.cache
+C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\AuthWindow.g.cs
+C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\MainWindow.g.cs
+C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\RegWindow.g.cs
+C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\App.g.cs
+C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client_MarkupCompile.cache
+C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client_MarkupCompile.lref
+C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\AuthWindow.baml
+C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\MainWindow.baml
+C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\RegWindow.baml
+C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client.g.resources
 C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client.AssemblyInfoInputs.cache
 C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client.AssemblyInfo.cs
@@ -17,64 +23,87 @@ C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client.dll
 C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\ref\Client.dll
 C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client.pdb
 C:\Users\termi\source\repos\Client\Client\obj\Debug\net5.0-windows\Client.genruntimeconfig.cache
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\bin\Debug\net5.0-windows\Client.exe
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\bin\Debug\net5.0-windows\Client.deps.json
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.json
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.dev.json
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\bin\Debug\net5.0-windows\Client.dll
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\bin\Debug\net5.0-windows\ref\Client.dll
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\bin\Debug\net5.0-windows\Client.pdb
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\Client.AuthForm.resources
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\Client.ChatForm.resources
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\Client.RegForm.resources
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\Client.csproj.GenerateResource.cache
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\Client.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\Client.AssemblyInfoInputs.cache
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\Client.AssemblyInfo.cs
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\Client.csproj.CoreCompileInputs.cache
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\Client.dll
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\ref\Client.dll
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\Client.pdb
-C:\Users\termi\Desktop\Chat2\ClientNet\Client\Client\obj\Debug\net5.0-windows\Client.genruntimeconfig.cache
-C:\Users\termi\Desktop\CliNet\Client\bin\Debug\net5.0-windows\Client.exe
-C:\Users\termi\Desktop\CliNet\Client\bin\Debug\net5.0-windows\Client.deps.json
-C:\Users\termi\Desktop\CliNet\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.json
-C:\Users\termi\Desktop\CliNet\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.dev.json
-C:\Users\termi\Desktop\CliNet\Client\bin\Debug\net5.0-windows\Client.dll
-C:\Users\termi\Desktop\CliNet\Client\bin\Debug\net5.0-windows\ref\Client.dll
-C:\Users\termi\Desktop\CliNet\Client\bin\Debug\net5.0-windows\Client.pdb
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.csproj.AssemblyReference.cache
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.AuthForm.resources
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.ChatForm.resources
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.RegForm.resources
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.csproj.GenerateResource.cache
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.AssemblyInfoInputs.cache
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.AssemblyInfo.cs
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.csproj.CoreCompileInputs.cache
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.dll
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\ref\Client.dll
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.pdb
-C:\Users\termi\Desktop\CliNet\Client\obj\Debug\net5.0-windows\Client.genruntimeconfig.cache
-C:\Users\termi\Desktop\MainChat\Client\Client\bin\Debug\net5.0-windows\Client.exe
-C:\Users\termi\Desktop\MainChat\Client\Client\bin\Debug\net5.0-windows\Client.deps.json
-C:\Users\termi\Desktop\MainChat\Client\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.json
-C:\Users\termi\Desktop\MainChat\Client\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.dev.json
-C:\Users\termi\Desktop\MainChat\Client\Client\bin\Debug\net5.0-windows\Client.dll
-C:\Users\termi\Desktop\MainChat\Client\Client\bin\Debug\net5.0-windows\ref\Client.dll
-C:\Users\termi\Desktop\MainChat\Client\Client\bin\Debug\net5.0-windows\Client.pdb
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.g.resources
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.AddingForm.resources
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.AuthForm.resources
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.ChatForm.resources
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.KeySetForm.resources
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.RegForm.resources
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.csproj.GenerateResource.cache
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.AssemblyInfoInputs.cache
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.AssemblyInfo.cs
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.csproj.CoreCompileInputs.cache
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.dll
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\ref\Client.dll
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.pdb
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\Client.genruntimeconfig.cache
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\bin\Debug\net5.0-windows\Client.exe
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\bin\Debug\net5.0-windows\Client.deps.json
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.json
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.dev.json
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\bin\Debug\net5.0-windows\Client.dll
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\bin\Debug\net5.0-windows\ref\Client.dll
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\bin\Debug\net5.0-windows\Client.pdb
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\AuthWindow.g.cs
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\MainWindow.g.cs
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\RegWindow.g.cs
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\App.g.cs
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\Client_MarkupCompile.cache
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\Client_MarkupCompile.lref
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\AuthWindow.baml
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\MainWindow.baml
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\RegWindow.baml
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\Client.g.resources
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\Client.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\Client.AssemblyInfoInputs.cache
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\Client.AssemblyInfo.cs
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\Client.csproj.CoreCompileInputs.cache
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\Client.dll
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\ref\Client.dll
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\Client.pdb
+C:\Users\termi\source\repos\C#\Не раб WPFchat из-за потоков\Client\obj\Debug\net5.0-windows\Client.genruntimeconfig.cache
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.exe
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.deps.json
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.json
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.dev.json
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.dll
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\ref\Client.dll
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.pdb
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.csproj.AssemblyReference.cache
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\AuthWindow.g.cs
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\MainWindow.g.cs
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\RegWindow.g.cs
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\App.g.cs
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client_MarkupCompile.cache
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client_MarkupCompile.lref
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\AuthWindow.baml
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\MainWindow.baml
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\RegWindow.baml
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.g.resources
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.AssemblyInfoInputs.cache
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.AssemblyInfo.cs
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.csproj.CoreCompileInputs.cache
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.dll
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\ref\Client.dll
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.pdb
+C:\Users\termi\source\repos\C#\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.genruntimeconfig.cache
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.exe
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.deps.json
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.json
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.runtimeconfig.dev.json
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.dll
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\ref\Client.dll
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Client.pdb
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Syncfusion.Licensing.dll
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Syncfusion.SfInput.WPF.dll
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\bin\Debug\net5.0-windows\Syncfusion.Shared.WPF.dll
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\AddingWindow.g.cs
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\AuthWindow.g.cs
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\ChatWindow.g.cs
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\KeySetWindow.g.cs
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\RegWindow.g.cs
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\App.g.cs
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client_MarkupCompile.cache
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client_MarkupCompile.lref
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\AddingWindow.baml
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\AuthWindow.baml
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\ChatWindow.baml
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\KeySetWindow.baml
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\RegWindow.baml
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.g.resources
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.AssemblyInfoInputs.cache
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.AssemblyInfo.cs
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.csproj.CoreCompileInputs.cache
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.dll
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\ref\Client.dll
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.pdb
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.genruntimeconfig.cache
+C:\Users\termi\Desktop\Рабочий  WPFchat\Client\obj\Debug\net5.0-windows\Client.csproj.AssemblyReference.cache
