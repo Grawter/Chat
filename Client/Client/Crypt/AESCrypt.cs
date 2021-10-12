@@ -84,8 +84,6 @@ namespace Client.Crypt
             catch (Exception)
             {
                 throw new Exception("Было принято сообщение, но его удалось не расшифровать");
-                //showInfo.ShowMessage($"The decryption string AES failed - {ex}", 3);
-                //throw new Exception(ex.Message);
             }
             //catch (Exception ex)
             //{

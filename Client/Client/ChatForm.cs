@@ -29,48 +29,30 @@ namespace Client
 
         private RSAParameters RSAKeyInfo = new RSAParameters { Exponent = new byte[] { 1, 0, 1 } };
         private byte[] session_key;
-        private Dictionary<string, byte[]> keys;
+        private Dictionary<string, byte[]> simmetrickeys;
+        private Dictionary<string, (RSAParameters, RSAParameters)> PersonalAsimmetricKeys;
+        private Dictionary<string, RSAParameters> asimmetrickeys;
 
         private Dictionary<string, string> DataChat;
 
         public string Friend
         {
             get { return friend; }
-            set
-            {
-                friend = value;
-            }
+            set { friend = value; }
         }
         private string friend;
-
-        public byte[] Mass_k
-        {
-            get { return mass_k; }
-            set
-            {
-                mass_k = value;
-            }
-        }
-
-        private byte[] mass_k;
 
         public string UserName
         {
             get { return userName; }
-            set
-            {
-                userName = value;
-            }
+            set { userName = value; }
         }
         private string userName;
 
         public string Email
         {
             get { return email; }
-            set
-            {
-                email = value;
-            }
+            set { email = value; }
         }
         private string email;
 
@@ -98,30 +80,28 @@ namespace Client
                 if (listBox1.SelectedItem != null)
                 {
                     if (!string.IsNullOrWhiteSpace(listBox1.SelectedItem.ToString()))
-                    {
-                        byte[] current_key;
+                    {           
                         string nick = listBox1.SelectedItem.ToString();
 
-                        KeySetForm kf = new KeySetForm
+                        KeySetForm ks = new KeySetForm
                         {
                             Owner = this,
                             Username = nick
                         };
 
-                        if (keys.TryGetValue(nick, out current_key))
-                            kf.Current_key = current_key;
+                        byte[] current_key;
+                        if (simmetrickeys.TryGetValue(nick, out current_key))
+                            ks.CurrentSimmetricKey = current_key;
 
-                        kf.ShowDialog();
+                        (RSAParameters, RSAParameters) asim_current_key;
+                        if (PersonalAsimmetricKeys.TryGetValue(nick, out asim_current_key))
+                            ks.CurrentAsimmetricKey = asim_current_key;
 
-                        if (mass_k != null)
-                        {
-                            if (keys.ContainsKey(nick))
-                                keys[nick] = mass_k;
-                            else
-                                keys.Add(nick, mass_k);
+                        RSAParameters friendRSA;
+                        if (asimmetrickeys.TryGetValue(nick, out friendRSA))
+                            ks.UsernameRSA = friendRSA;
 
-                            mass_k = null;
-                        }
+                        ks.ShowDialog();               
                     }
                 }    
             };
@@ -226,7 +206,9 @@ namespace Client
 
                     if (currentCommand.Contains("connect")) // При удачной идентификации
                     {
-                        keys = new Dictionary<string, byte[]>();
+                        PersonalAsimmetricKeys = new Dictionary<string, (RSAParameters, RSAParameters)>();
+                        asimmetrickeys = new Dictionary<string, RSAParameters>();
+                        simmetrickeys = new Dictionary<string, byte[]>();
                         DataChat = new Dictionary<string, string>();
 
                         Invoke((MethodInvoker)delegate // Обеспечение доступа к элементам формы в потоке, в котором они были созданы
@@ -364,7 +346,7 @@ namespace Client
 
                     #endregion
 
-                    #region Блок принятия сообщений
+                    #region Блок принятия сообщений и ключей
 
                     if (currentCommand.Contains("unknownuser")) // Если не найден адресат
                     {
@@ -379,10 +361,18 @@ namespace Client
                         int mode = int.Parse(currentCommand.Split('|')[2]);
                         string message = currentCommand.Split('|')[3];
                         
-                        if (keys.ContainsKey(from) && mode == 1)
+                        if (simmetrickeys.ContainsKey(from) && mode == 1)
                         {
                             byte[] enc_mass = Convert.FromBase64String(message);
-                            string dec_mess = AESCrypt.AESDecrypt(enc_mass, keys[from]).Result;
+                            string dec_mess = AESCrypt.AESDecrypt(enc_mass, simmetrickeys[from]).Result;
+
+                            DataChat[from] += Environment.NewLine + from + "**: " + dec_mess;
+                            AddMessage(dec_mess, from, true);
+                        }
+                        else if(PersonalAsimmetricKeys.ContainsKey(from) && mode == 2)
+                        {                                    
+                            byte[] enc_mass = Convert.FromBase64String(message);
+                            string dec_mess = RSACrypt.RSADecrypt_Str(enc_mass, PersonalAsimmetricKeys[from].Item2);
 
                             DataChat[from] += Environment.NewLine + from + "**: " + dec_mess;
                             AddMessage(dec_mess, from, true);
@@ -406,6 +396,24 @@ namespace Client
                         continue;
                     }
 
+                    if (currentCommand.Contains("giveRSA")) // Получение публичного RSA ключа
+                    {
+                        string from = currentCommand.Split('|')[1];
+                        string key = currentCommand.Split('|')[2];
+
+                        if (!asimmetrickeys.ContainsKey(from))
+                        {
+                            RSAParameters new_key = new RSAParameters { Exponent = new byte[] { 1, 0, 1 }, Modulus = Convert.FromBase64String(key) };
+                            asimmetrickeys.Add(from, new_key);
+                        }
+                        else
+                            asimmetrickeys[from] = new RSAParameters { Exponent = new byte[] { 1, 0, 1 }, Modulus = Convert.FromBase64String(key) };
+
+                        showInfo.ShowMessage("Получен RSA ключ от " + from);
+
+                        continue;
+                    }
+
                     #endregion
 
                 }
@@ -416,7 +424,7 @@ namespace Client
 
             }
 
-        }
+        }      
 
         #region Блок обработки основных сценариев
 
@@ -450,9 +458,37 @@ namespace Client
             }
         }
 
-        public void DelKey(string name) // Удаление ключа
+        public void SetAES(string name, byte [] key) // Установить AES ключ
         {
-            keys.Remove(name);
+            if (simmetrickeys.ContainsKey(name))
+                simmetrickeys[name] = key;
+            else
+                simmetrickeys.Add(name, key);
+        }
+
+        public void SetRSA(string name, (RSAParameters, RSAParameters) key) // Установить RSA ключ
+        {
+            if (PersonalAsimmetricKeys.ContainsKey(name))
+                PersonalAsimmetricKeys[name] = key;
+            else
+                PersonalAsimmetricKeys.Add(name, key);
+        }
+
+        public void SendRSA(string name, string key) // Отправка публичного ключа
+        {
+            Send($"#sendRSA|{name}|{key}");
+        }
+
+        public void DelKey(string name, bool type) // Удаление ключа
+        {
+            if (type)
+                simmetrickeys.Remove(name);
+            else
+            {
+                PersonalAsimmetricKeys.Remove(name);
+                asimmetrickeys.Remove(name);
+            }
+                
         }
 
         private void Send(byte[] buffer) // Отправить сообщение на сервер в формате массив байт
@@ -478,7 +514,7 @@ namespace Client
             {
                 showInfo.ShowMessage("Ошибка отправки строки: " + exp.Message, 3);
             }
-        }
+        }      
 
         private void SendMess(string msgData, string to)
         {
@@ -487,12 +523,22 @@ namespace Client
                 if (!msgData.EndsWith("\r\n"))
                     msgData += "\r\n";
 
-                if (keys.ContainsKey(to))
-                {            
+                if (simmetrickeys.ContainsKey(to) && asimmetrickeys.ContainsKey(to))
+                    showInfo.ShowMessage("Выберите только один метод дополнительного шифрования", 2);
+                else if (simmetrickeys.ContainsKey(to))
+                {
                     DataChat[to] += Environment.NewLine + UserName + "**: " + msgData;
 
-                    string crp_mess = Convert.ToBase64String(AESCrypt.AESEncrypt(msgData, keys[to]).Result);
+                    string crp_mess = Convert.ToBase64String(AESCrypt.AESEncrypt(msgData, simmetrickeys[to]).Result);
                     Send($"#message|{to}|1|{crp_mess}");
+                    AddMessage(msgData, UserName, true);
+                }
+                else if (asimmetrickeys.ContainsKey(to))
+                {
+                    DataChat[to] += Environment.NewLine + UserName + "**: " + msgData;
+
+                    string crp_mess = Convert.ToBase64String(RSACrypt.RSAEncrypt_Str(msgData, asimmetrickeys[to]));
+                    Send($"#message|{to}|2|{crp_mess}");
                     AddMessage(msgData, UserName, true);
                 }
                 else

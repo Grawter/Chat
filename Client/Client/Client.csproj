@@ -7,11 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ChatIcon.ico" />
     <None Remove="Resources\Clipboard.png" />
     <None Remove="Resources\Send.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\ChatIcon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Clipboard.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

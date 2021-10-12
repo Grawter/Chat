@@ -183,7 +183,7 @@ namespace Server
 
                     #endregion
 
-                    #region Блок добавления, удаления и блокирования контактов 
+                    #region Блок добавления, удаления и блокирования контактов, проверка статусов
 
                     if (currentCommand.Contains("findbynick")) // Найти пользователя
                     {
@@ -271,7 +271,7 @@ namespace Server
 
                     #endregion
 
-                    #region Блок передачи сообщений
+                    #region Блок передачи сообщений и ключей
 
                     if (currentCommand.Contains("message")) // Обработка отправленного сообщения
                     {
@@ -288,6 +288,24 @@ namespace Server
                         }
 
                         targetUser.Send($"#msg|{Me.UserName}|{mode}|{Content}");
+
+                        continue;
+                    }
+
+                    if (currentCommand.Contains("sendRSA")) // Обмен ключами
+                    {
+                        string TargetName = currentCommand.Split('|')[1];
+                        string publickey = currentCommand.Split('|')[2];
+
+                        UsersFunc targetUser = Server.GetUserByNick(TargetName);
+
+                        if (targetUser == null || !Me.Friends.Any(fr => fr.Name == TargetName))
+                        {
+                            Send($"#unknownuser|{TargetName}");
+                            continue;
+                        }
+
+                        targetUser.Send($"#giveRSA|{Me.UserName}|{publickey}");
 
                         continue;
                     }
