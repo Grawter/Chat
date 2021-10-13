@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -16,8 +17,8 @@ namespace Server
         #region Server info
 
         public static Socket ServerSocket;
-        public const string Host = "127.0.0.1";
-        public const int Port = 2222;
+        public static readonly string Host = ConfigurationManager.AppSettings["Host"];
+        public static readonly int Port = int.Parse(ConfigurationManager.AppSettings["Port"]);
         public static bool Work = true;
 
         #endregion

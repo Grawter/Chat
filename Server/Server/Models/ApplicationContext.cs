@@ -1,7 +1,5 @@
-﻿using System;
+﻿using System.Configuration;
 using Microsoft.EntityFrameworkCore;
-using Server.Crypt;
-using Server.Helpers;
 
 namespace Server.Models
 {
@@ -22,7 +20,7 @@ namespace Server.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=usersdata.db");
+            optionsBuilder.UseSqlite(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
         }
 
     }
