@@ -295,14 +295,7 @@ namespace Client
                         string from = currentCommand.Split('|')[1];
                         string key = currentCommand.Split('|')[2];
 
-                        if (!asimmetrickeys.ContainsKey(from))
-                        {
-                            RSAParameters new_key = new RSAParameters { Exponent = new byte[] { 1, 0, 1 }, Modulus = Convert.FromBase64String(key) };
-                            asimmetrickeys.Add(from, new_key);
-                        }
-                        else
-                            asimmetrickeys[from] = new RSAParameters { Exponent = new byte[] { 1, 0, 1 }, Modulus = Convert.FromBase64String(key) };
-
+                        SetOtherRSA(from, key);
                         showInfo.ShowMessage("Получен RSA ключ от " + from);
 
                         continue;
@@ -362,12 +355,15 @@ namespace Client
                 simmetrickeys.Add(name, key);
         }
 
-        public void SetRSA(string name, (RSAParameters, RSAParameters) key) // Установить RSA ключ
+        public void SetMyRSA(string name, ref (RSAParameters, RSAParameters) Mykey) // Установить свой RSA ключ
         {
-            if (PersonalAsimmetricKeys.ContainsKey(name))
-                PersonalAsimmetricKeys[name] = key;
-            else
-                PersonalAsimmetricKeys.Add(name, key);
+            PersonalAsimmetricKeys[name] = Mykey;
+
+        }
+
+        public void SetOtherRSA(string name, string OtherKey) // Установить чужой RSA ключ
+        {
+            asimmetrickeys[name] = new RSAParameters { Exponent = new byte[] { 1, 0, 1 }, Modulus = Convert.FromBase64String(OtherKey) };
         }
 
         public void SendRSA(string name, string key) // Отправка публичного ключа
@@ -518,7 +514,7 @@ namespace Client
                     KeySetWindow ks = new KeySetWindow
                     {
                         Owner = this,
-                        Username = nick
+                        UserName = nick
                     };
 
                     byte[] current_key;

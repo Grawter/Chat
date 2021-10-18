@@ -10,7 +10,7 @@ namespace Client
     public partial class KeySetWindow : Window
     {
         IShowInfo showInfo = new ShowInfo();
-        public string Username
+        public string UserName
         {
             get { return username; }
             set { username = value; }
@@ -90,7 +90,7 @@ namespace Client
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            (Owner as ChatWindow).DelKey(Username, true);
+            (Owner as ChatWindow).DelKey(UserName, true);
             MaskedTB1.Text = "";
             showInfo.ShowMessage("Ключ удалён");
         }
@@ -122,12 +122,27 @@ namespace Client
 
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
-            (Owner as ChatWindow).SetRSA(username, current_asimmetric_key);
+            bool send = false;
+
+            if (CurrentAsimmetricKey.Item1.Modulus != null && CurrentAsimmetricKey.Item2.Modulus != null)
+            {
+                (Owner as ChatWindow).SetMyRSA(UserName, ref current_asimmetric_key);
+                send = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(TB2.Text))
+            {
+                (Owner as ChatWindow).SetOtherRSA(UserName, TB2.Text);
+                send = true;
+            }
+
+            if (send)
+                showInfo.ShowMessage("Ключ установлен");
         }
 
         private void Button_Click_7(object sender, RoutedEventArgs e)
         {
-            (Owner as ChatWindow).DelKey(Username, false);
+            (Owner as ChatWindow).DelKey(UserName, false);
             TB1.Text = "";
             TB2.Text = "";
             showInfo.ShowMessage("Ключ удалён");

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\Client.csproj": {}
+    "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\Client.csproj": {}
   },
   "projects": {
-    "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\Client.csproj": {
+    "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\Client.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\Client.csproj",
+        "projectUniqueName": "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\Client.csproj",
         "projectName": "Client",
-        "projectPath": "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\Client.csproj",
+        "projectPath": "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\Client.csproj",
         "packagesPath": "C:\\Users\\termi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\obj\\",
+        "outputPath": "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\termi\\AppData\\Roaming\\NuGet\\NuGet.Config",

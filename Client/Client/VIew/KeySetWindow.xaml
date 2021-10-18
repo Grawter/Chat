@@ -105,7 +105,7 @@
                         <TextBlock Canvas.Top="5" Canvas.Left="427" Text="Приватный ключ" FontSize="12" />
                         <TextBlock Name="TBlock2" Canvas.Top="5" Canvas.Left="525" Text="Имя" FontSize="12" FontWeight="Black"/>
 
-                        <TextBox Canvas.Top="31" Canvas.Right="10"  Width="350" IsReadOnly="True" Name="TB2"/>
+                        <TextBox Canvas.Top="31" Canvas.Right="10"  Width="350" Name="TB2"/>
 
                         <TextBlock Canvas.Top="65" Canvas.Left="10" Text="Чем больше длина, тем больше требуется вычислительных ресурсов"/>
                         <TextBlock Canvas.Top="86" Canvas.Left="10" Text="Длина ключа (бит)"/>

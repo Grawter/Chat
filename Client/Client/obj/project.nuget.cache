@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "OFyDiR6gDOBxEOL9tVwar/lkUlkjAHIONCT//nkQEEZIGEceeuB5eECb7YaBUGzTNA06nd1nopj0S6JR1yJwWA==",
+  "dgSpecHash": "H8jG1JTwkvd5PKKgar7ay2YV5pL8isBIABvn7K8sO/jDSKSE2G40c61Rvm/ssGKx4KslCC3fHBL7u71mtj8NpA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\Client.csproj",
+  "projectFilePath": "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\Client.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\termi\\.nuget\\packages\\syncfusion.licensing\\19.3.0.45\\syncfusion.licensing.19.3.0.45.nupkg.sha512",
     "C:\\Users\\termi\\.nuget\\packages\\syncfusion.sfinput.wpf\\19.3.0.45\\syncfusion.sfinput.wpf.19.3.0.45.nupkg.sha512",
