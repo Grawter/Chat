@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text;
 using System.Security.Cryptography;
-using Client.Helpers;
 using Client.Interfaces;
+using Client.Helpers;
 
 namespace Client.Crypt
 {

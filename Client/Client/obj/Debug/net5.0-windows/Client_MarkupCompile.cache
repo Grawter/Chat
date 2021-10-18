@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\termi\Desktop\MainChat\Client\Client\obj\Debug\net5.0-windows\
+C:\Users\termi\Desktop\Chat\Client\Client\obj\Debug\net5.0-windows\
 Client
 none
 false
 TRACE;DEBUG;NET;NET5_0;NETCOREAPP
-C:\Users\termi\Desktop\MainChat\Client\Client\App.xaml
-51076056753
+C:\Users\termi\Desktop\Chat\Client\Client\App.xaml
+51508888197
 
-13815853250
+131964667850
 196-1591321355
-AddingWindow.xaml;AuthWindow.xaml;ChatWindow.xaml;KeySetWindow.xaml;RegWindow.xaml;
+VIew\AddingWindow.xaml;VIew\AuthWindow.xaml;VIew\ChatWindow.xaml;VIew\KeySetWindow.xaml;VIew\RegWindow.xaml;
 
 False
 

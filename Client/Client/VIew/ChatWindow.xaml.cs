@@ -35,16 +35,6 @@ namespace Client
 
         private Dictionary<string, string> DataChat;
 
-        public string Friend
-        {
-            get { return friend; }
-            set
-            {
-                friend = value;
-            }
-        }
-        private string friend;
-
         public string UserName
         {
             get { return userName; }
@@ -54,23 +44,6 @@ namespace Client
             }
         }
         private string userName;
-
-        public string Email
-        {
-            get { return email; }
-            set
-            {
-                email = value;
-            }
-        }
-        private string email;
-
-        public string Password
-        {
-            get { return password; }
-            set { password = value; }
-        }
-        private string password;
 
         #endregion
 
@@ -113,6 +86,8 @@ namespace Client
                 showInfo.ShowMessage("Связь с сервером не установлена.", 3);
             }
         }
+
+        #region Слушатель и обработчик команд
 
         public void listner()
         {
@@ -161,19 +136,20 @@ namespace Client
                         DataChat = new Dictionary<string, string>();
 
                         Dispatcher.Invoke(new Action(delegate // Обеспечение доступа к элементам формы в потоке, в котором они были созданы
-                        {  
+                        {
                             TB1.Text = "Подключение выполнено!";
-                            TBlock1.Text = UserName;
+                            TBlock1.Text = currentCommand.Split('|')[1];
+                            UserName = currentCommand.Split('|')[1];
                         }));
 
                         continue;
                     }
 
-                    if (currentCommand.Contains("usernamenotaccess")) // Ник уже занят
+                    if (currentCommand.Contains("regfault")) // Неудачная регистрация
                     {
                         Dispatcher.Invoke(new Action(delegate
                         {
-                            (Owner as RegWindow).Status = "Ник уже занят";
+                            (Owner as RegWindow).Status = currentCommand.Split('|')[1];
                             Owner.Show();
                             this.Hide();
                         }));
@@ -181,35 +157,11 @@ namespace Client
                         continue;
                     }
 
-                    if (currentCommand.Contains("emailnotaccess")) // Email уже занят
+                    if (currentCommand.Contains("logfault")) // Неудачная аутентификация
                     {
                         Dispatcher.Invoke(new Action(delegate
                         {
-                            (Owner as RegWindow).Status = "Электронная почта уже занята";
-                            Owner.Show();
-                            this.Hide();
-                        }));
-
-                        continue;
-                    }
-
-                    if (currentCommand.Contains("logfault")) // Неверные данные для входа
-                    {
-                        Dispatcher.Invoke(new Action(delegate
-                        {
-                            (Owner as AuthWindow).Status = "Неверный логин или пароль";
-                            Owner.Show();
-                            this.Hide();
-                        }));
-
-                        continue;
-                    }
-
-                    if (currentCommand.Contains("sessionbusy")) // Неверные данные для входа
-                    {
-                        Dispatcher.Invoke(new Action(delegate
-                        {
-                            (Owner as AuthWindow).Status = "Сессия занята";
+                            (Owner as AuthWindow).Status = currentCommand.Split('|')[1];
                             Owner.Show();
                             this.Hide();
                         }));
@@ -338,13 +290,6 @@ namespace Client
                         continue;
                     }
 
-                    if (currentCommand.Contains("chat")) // Принять чат
-                    {
-                        string chat = currentCommand.Split('|')[1];
-                        LoadMessage(chat);
-                        continue;
-                    }
-
                     if (currentCommand.Contains("giveRSA")) // Получение публичного RSA ключа
                     {
                         string from = currentCommand.Split('|')[1];
@@ -375,36 +320,38 @@ namespace Client
 
         }
 
+        #endregion
+
         #region Блок обработки основных сценариев
 
-        public void Handshake(bool login) // "Обмен рукопожатиями"
+        public void Handshake(bool login, string Nick, string Password, string Email = "") // "Обмен рукопожатиями"
         {
             Aes aes = Aes.Create();
             session_key = aes.Key;
             Send(RSACrypt.RSAEncrypt(session_key, RSAKeyInfo));
 
             if (login)
-                Login();
+                Login(Nick, Password);
             else
-                Registration();
+                Registration(Nick, Email, Password);
         }
 
-        public void Registration() // Регистрация
+        public void Registration(string Nick, string Email, string Password) // Регистрация
         {
-            if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(password))
-            {
-                Send($"#register|{userName}|{email}|{password}");
-                password = "";
-            }
+            if (!string.IsNullOrWhiteSpace(Nick) && !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password))
+                Send($"#register|{Nick}|{Email}|{Password}");
         }
 
-        public void Login() // Логин
+        public void Login(string Nick, string Password) // Логин
         {
-            if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(password))
-            {
-                Send($"#login|{userName}|{password}");
-                password = "";
-            }
+            if (!string.IsNullOrWhiteSpace(Nick) && !string.IsNullOrWhiteSpace(Password))
+                Send($"#login|{Nick}|{Password}");
+        }
+
+        public void AddFriend(string name) // Добавление контакта
+        {
+            if (!string.IsNullOrWhiteSpace(name))
+                Send($"#findbynick|{name}");
         }
 
         public void SetAES(string name, byte[] key) // Установить AES ключ
@@ -465,7 +412,7 @@ namespace Client
             }
         }
 
-        private void SendMess(string msgData, string to)
+        private void SendMess(string msgData, string to) // Обработка отправленного сообщения
         {
             if (!string.IsNullOrWhiteSpace(msgData) && !string.IsNullOrWhiteSpace(to))
             {
@@ -499,7 +446,7 @@ namespace Client
                 }
             }
 
-            TB2.Text = string.Empty;
+            TB2.Clear(); 
         }
 
         private void AddMessage(string message, string from, bool ds = false) // Отображение нового сообщения в чате 
@@ -542,12 +489,6 @@ namespace Client
             AddingWindow add = new AddingWindow();
             add.Owner = this;
             add.ShowDialog();
-
-            if (!string.IsNullOrWhiteSpace(Friend))
-            {
-                Send($"#findbynick|{Friend}");
-                Friend = string.Empty;
-            }
         }
 
         private void listBox1_SelectedIndexChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) // Выбор адресата
@@ -614,7 +555,7 @@ namespace Client
             }
         }
 
-        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        private void CheckBox_Click(object sender, RoutedEventArgs e) // Переход в тихий режим
         {
             if ((bool)checkBox1.IsChecked)
                 Send("#silenceon");
@@ -633,7 +574,7 @@ namespace Client
                 showInfo.ShowMessage("Адресат не выбран", 2);
         } 
 
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) // При закрытии формы
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) // При закрытии окна
         {
             if (_serverSocket.Connected)
             {

@@ -1,5 +1,5 @@
-﻿using Server.Models;
-using System.Linq;
+﻿using System.Linq;
+using Server.Models;
 
 namespace Server.Helpers
 {

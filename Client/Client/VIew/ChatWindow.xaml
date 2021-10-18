@@ -21,7 +21,7 @@
 
         <TextBlock Name="TBlock1" HorizontalAlignment="Right" Margin="0 0 20 0" Text="Ник" FontSize="19" FontStyle="Italic" FontWeight="Bold" Foreground="#FF1856C3" />
         <Canvas Grid.Column="0" Grid.Row="0">
-            <TextBlock Name="TBlock2" Canvas.Top="5" Canvas.Left="10" Text="Чат:" FontSize="15" />
+            <TextBlock Canvas.Top="5" Canvas.Left="10" Text="Чат:" FontSize="15" />
             <TextBox Name="TB1"  Canvas.Top="35" Canvas.Left="20" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" FontSize="13" Width="530" Height="310"/>
         </Canvas>
 
@@ -42,11 +42,11 @@
                     </TextBlock.Style>
                 </TextBlock>
             </Grid>
-            
+
             <Button Name="button1" Width="76" Height="38" Canvas.Top="17" Canvas.Left="476" Background="WhiteSmoke" Click="Button_Click_2" >
                 <Image Source="\Resources\Send.png" Height="30" Width="40" />
             </Button>
-            
+
         </Canvas>
 
         <Canvas Grid.Column="1" Grid.Row="0" Background="#FFA4CDFF">
@@ -74,4 +74,5 @@
         </Canvas>
 
     </Grid>
+
 </Window>

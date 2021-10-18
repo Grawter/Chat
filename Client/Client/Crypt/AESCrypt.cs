@@ -1,9 +1,9 @@
 ﻿using System;
-using Client.Helpers;
-using Client.Interfaces;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Client.Interfaces;
+using Client.Helpers;
 
 namespace Client.Crypt
 {

@@ -12,6 +12,8 @@ namespace Server
 {
     public class UsersFunc
     {
+        #region Блок переменных и свойств
+
         private Socket _userHandle;
 
         private Thread _userThread;
@@ -29,9 +31,11 @@ namespace Server
         }
         private User me;
 
-        private bool Handshake = false;     
+        private bool Handshake = false;
         private bool AuthSuccess = false;
         private bool Silence_mode = false;
+
+        #endregion
 
         public UsersFunc(Socket handle)
         {
@@ -111,10 +115,10 @@ namespace Server
                             switch (status)
                             {
                                 case 1:
-                                    Send("#usernamenotaccess");
-                                     continue;
+                                    Send("#regfault|Ник уже занят");
+                                    continue;
                                 case 2:
-                                    Send("#emailnotaccess");
+                                    Send("#regfault|Электронная почта уже занята");
                                     continue;
                             }                      
 
@@ -135,7 +139,7 @@ namespace Server
 
                             AuthSuccess = true;
 
-                            Send("#connect");
+                            Send($"#connect|{me.UserName}");
                         }
                         else if (currentCommand.Contains("login"))
                         {
@@ -144,7 +148,7 @@ namespace Server
                             var member = Server.GetUserGlobalByNick(info[1]).Result;
                             if (member == null)
                             {
-                                Send("#logfault");
+                                Send("#logfault|Неверный логин или пароль");
                                 continue;
                             }
 
@@ -152,7 +156,7 @@ namespace Server
                             {
                                 if (Server.ContainsNick(info[1]))
                                 {
-                                    Send("#sessionbusy");
+                                    Send("#logfault|Сессия занята");
                                     continue;
                                 }
 
@@ -161,7 +165,7 @@ namespace Server
 
                                 AuthSuccess = true;
 
-                                Send("#connect");
+                                Send($"#connect|{me.UserName}");
 
                                 string userList = FriendsList.GetList(ref me);
 
@@ -169,7 +173,7 @@ namespace Server
                                     Send("#userlist|" + userList);
                             }
                             else
-                                Send("#logfault");
+                                Send("#logfault|Неверный логин или пароль");
                         }
 
                         continue;

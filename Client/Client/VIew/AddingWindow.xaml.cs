@@ -16,7 +16,7 @@ namespace Client
         {
             if (!string.IsNullOrWhiteSpace(TB1.Text))
             {
-                (Owner as ChatWindow).Friend = TB1.Text;
+                (Owner as ChatWindow).AddFriend(TB1.Text);
                 Owner.Show();
                 this.Close();
             }

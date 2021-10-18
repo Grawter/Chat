@@ -1,13 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using Client.Helpers;
-using Client.Interfaces;
 
 namespace Client
 {
     public partial class RegWindow : Window
     {
-        IShowInfo showInfo = new ShowInfo();
         bool attempt = false;
         ChatWindow Chat;
 
@@ -35,34 +33,13 @@ namespace Client
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            string UserName = TB1.Text, Email = TB2.Text, Password = PB1.Password;
+            string UserName = TB1.Text, Email = TB2.Text;
 
-            if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password) || string.IsNullOrWhiteSpace(PB2.Password))
+            string Error = DataValidation.IsValid(UserName, Email, PB1.Password, PB2.Password);
+            if (!string.IsNullOrEmpty(Error))
             {
-                WarningTBlock.Text = "Заполните пустые поля!";
+                Status = Error;
                 return;
-            }
-
-            if (!Password.Equals(PB2.Password))
-            {
-                WarningTBlock.Text = "Пароли не совпадают!";
-                return;
-            }
-
-            switch (DataValidation.IsValid(UserName, Email, Password))
-            {
-                case 1:
-                    WarningTBlock.Text = "Логин меньше 6 символов";
-                    return;
-
-                case 2:
-                    WarningTBlock.Text = "Email не соответствует формату";
-                    return;
-
-                case 3:
-                    WarningTBlock.Text = "Пароли не соответствует формату";
-                    showInfo.ShowMessage("Пароль должен содержать не менее 6 символов, включая минимум один формата [a-z],[A-Z],[0-9] и спец. символ");
-                    return;
             }
 
             if (Chat == null)
@@ -70,18 +47,17 @@ namespace Client
                 Chat = new ChatWindow() { Owner = this };
             }
 
-            Chat.UserName = UserName;
-            Chat.Email = Email;
-            Chat.Password = Password;
-
             Chat.Show();
 
             if (!attempt)
-                Chat.Handshake(false);
+                Chat.Handshake(false, UserName, PB1.Password, Email);
             else
-                Chat.Registration();
+                Chat.Registration(UserName, Email, PB1.Password);
 
             this.Hide();
+
+            PB1.Clear();
+            PB2.Clear();
 
             attempt = true;
         }

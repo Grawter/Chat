@@ -4,6 +4,8 @@ namespace Client
 {
     public partial class AuthWindow : Window
     {
+        bool attempt = false;
+        ChatWindow Chat;
         public string Status
         {
             set { WarningTBlock.Text = value; }
@@ -31,15 +33,23 @@ namespace Client
                 return;
             }
 
-            ChatWindow Chat = new ChatWindow();
-            Chat.Owner = this;
-
-            Chat.UserName = TB1.Text;
-            Chat.Password = PB1.Password;
+            if (Chat == null)
+            {
+                Chat = new ChatWindow() { Owner = this };
+            }
 
             Chat.Show();
-            Chat.Handshake(true);
+
+            if (!attempt)
+                Chat.Handshake(true, TB1.Text, PB1.Password);
+            else
+                Chat.Login(TB1.Text, PB1.Password);
+
             this.Hide();
+
+            PB1.Clear();
+
+            attempt = true;
         }
 
         private void OnPasswordChange(object sender, RoutedEventArgs e)

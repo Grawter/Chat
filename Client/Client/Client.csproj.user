@@ -7,33 +7,33 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="AddingWindow.xaml.cs">
+    <Compile Update="VIew\AddingWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="AuthWindow.xaml.cs">
+    <Compile Update="VIew\AuthWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="KeySetWindow.xaml.cs">
+    <Compile Update="VIew\KeySetWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="RegWindow.xaml.cs">
+    <Compile Update="VIew\RegWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="AddingWindow.xaml">
+    <Page Update="VIew\AddingWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="AuthWindow.xaml">
+    <Page Update="VIew\AuthWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="ChatWindow.xaml">
+    <Page Update="VIew\ChatWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="KeySetWindow.xaml">
+    <Page Update="VIew\KeySetWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="RegWindow.xaml">
+    <Page Update="VIew\RegWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

@@ -92,7 +92,7 @@ namespace Client
         {
             (Owner as ChatWindow).DelKey(Username, true);
             MaskedTB1.Text = "";
-            showInfo.ShowMessage("Ключ отключён");
+            showInfo.ShowMessage("Ключ удалён");
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
