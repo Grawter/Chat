@@ -21,16 +21,33 @@ namespace Client.Helpers.KeySet
             return key_str;
         }
 
-        static public byte[] StrToByte(string[] str_mass)
+        static public byte[] StrToByte(string str)
         {
-            byte[] key_mass = new byte[str_mass.Length];
-
-            for (int i = 0; i < str_mass.Length; i++)
+            if (str.Contains("."))
             {
-                key_mass[i] = byte.Parse(str_mass[i]);
-            }
+                string[] str_mass = str.Split(".");
 
-            return key_mass;
+                byte[] key_mass = new byte[str_mass.Length];
+
+                for (int i = 0; i < str_mass.Length; i++)
+                {
+                    key_mass[i] = byte.Parse(str_mass[i]);
+                }
+
+                return key_mass;
+            }
+            else
+            {
+                byte[] key_mass = new byte[str.Length / 3];
+
+                for (int i = 0, j = 0; i < str.Length / 3; i++, j += 3)
+                {
+                    key_mass[i] = byte.Parse(str[j].ToString() + str[j + 1] + str[j + 2]);
+                }
+
+                return key_mass;
+            }
+            
         }
     }
 }

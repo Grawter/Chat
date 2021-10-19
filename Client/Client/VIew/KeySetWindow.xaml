@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
         xmlns:local="clr-namespace:Client"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Title="Установка ключа" Height="240" Width="810" ResizeMode="NoResize" Icon="\Resources\ChatIcon.ico">
 
@@ -61,10 +62,10 @@
                         Text="Указывайте цифры от 0 до 255 для установления приватного ключа с" 
                         FontSize="15"/>
 
-                        <TextBlock Name="TBlock1" Text="Имя" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="645,30,0,0"  FontSize="15" FontWeight="Bold"/>
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Margin="645,30,0,0" FontSize="15" FontWeight="Bold"
+                                   Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" />
 
                         <syncfusion:SfMaskedEdit  
-                         Name="MaskedTB1"
                          HorizontalAlignment="Center"
                          VerticalAlignment="Top"
                          Width="715"
@@ -72,13 +73,18 @@
                          Margin="0,60,0,0"
                          MaskType = "Simple"
                          Mask="000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000/000"
-                        />
+                         Value="{Binding Current_Simmetric_Key_Str, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         />
 
                         <Canvas>
-                            <Button Style="{DynamicResource ButtonStyle1}" Content="Сгенерировать ключ" Canvas.Top="105" Canvas.Left="130" Click="Button_Click_1"/>
-                            <Button Style="{DynamicResource ButtonStyle1}" Content="Установить ключ" Canvas.Top="105" Canvas.Left="310" Click="Button_Click_2"/>
-                            <Button Style="{DynamicResource ButtonStyle1}" Content="Удалить ключ"  Canvas.Top="105" Canvas.Left="490" Click="Button_Click_3"/>
-                            <Button Canvas.Top="105" Canvas.Left="720" Height="40" Width="30" Click="Button_Click_4">
+                            <Button Style="{DynamicResource ButtonStyle1}" Content="Сгенерировать ключ" Canvas.Top="105" Canvas.Left="130" 
+                                    Command="{Binding GenerateSymmetricCommand}"/>
+                            <Button Style="{DynamicResource ButtonStyle1}" Content="Установить ключ" Canvas.Top="105" Canvas.Left="310" 
+                                    Command="{Binding SetSymmetricCommand}" />
+                            <Button Style="{DynamicResource ButtonStyle1}" Content="Удалить ключ"  Canvas.Top="105" Canvas.Left="490" 
+                                    Command="{Binding DelSymmetricCommand}" />
+                            <Button Canvas.Top="105" Canvas.Left="720" Height="40" Width="30" 
+                                    Command="{Binding CopySymmetricCommand}" >
                                 <Image Source="/Resources/Clipboard.png"/>
                             </Button>
                         </Canvas>
@@ -97,30 +103,40 @@
                 <TabItem.Content>
                     <Canvas Background="Beige">
                         <TextBlock Canvas.Top="5" Canvas.Left="10" Text="Публичный ключ:" FontSize="12" />
-                        <TextBox  Canvas.Top="31" Canvas.Left="10" Width="350" IsReadOnly="True" Name="TB1"/>
-                        <Button Canvas.Top="20" Canvas.Left="370" Height="40" Width="30" Click="Button_Click_9">
+                        <TextBox  Canvas.Top="31" Canvas.Left="10" Width="350" IsReadOnly="True"
+                                  Text="{Binding Current_Asimmetric_Key_Str, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Canvas.Top="20" Canvas.Left="370" Height="40" Width="30" 
+                                Command="{Binding CopyAsymmetricCommand}">
                             <Image Source="/Resources/Clipboard.png"/>
                         </Button>
 
                         <TextBlock Canvas.Top="5" Canvas.Left="427" Text="Приватный ключ" FontSize="12" />
-                        <TextBlock Name="TBlock2" Canvas.Top="5" Canvas.Left="525" Text="Имя" FontSize="12" FontWeight="Black"/>
+                        <TextBlock Canvas.Top="5" Canvas.Left="525" FontSize="12" FontWeight="Black"
+                                   Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <TextBox Canvas.Top="31" Canvas.Right="10"  Width="350" Name="TB2"/>
+                        <TextBox Canvas.Top="31" Canvas.Right="10"  Width="350"
+                                  Text="{Binding UserNameRSA_Str, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBlock Canvas.Top="65" Canvas.Left="10" Text="Чем больше длина, тем больше требуется вычислительных ресурсов"/>
                         <TextBlock Canvas.Top="86" Canvas.Left="10" Text="Длина ключа (бит)"/>
-                        <ComboBox Width="60" Canvas.Left="121" Canvas.Top="86" SelectedIndex="0" Name="CB1">
-                            <TextBlock>2048</TextBlock>
-                            <TextBlock>3072</TextBlock>
-                            <TextBlock>4096</TextBlock>
-                            <TextBlock>5120</TextBlock>
-                            <TextBlock>6016</TextBlock>
+                        <ComboBox Width="60" Canvas.Left="121" Canvas.Top="86"
+                                  IsSynchronizedWithCurrentItem="True"
+                                  SelectedIndex="{Binding AsimmKeySize, UpdateSourceTrigger=PropertyChanged}">
+                            <ComboBoxItem Content="2048"/>
+                            <ComboBoxItem Content="3072"/>
+                            <ComboBoxItem Content="4096"/>
+                            <ComboBoxItem Content="5120"/>
+                            <ComboBoxItem Content="6016"/>
                         </ComboBox>
 
-                        <Button Style="{DynamicResource ButtonStyle1}" Content="Сгенерировать ключ" Canvas.Top="120" Canvas.Left="50" Click="Button_Click_5"/>
-                        <Button Style="{DynamicResource ButtonStyle1}" Content="Установить ключ" Canvas.Top="120" Canvas.Left="230" Click="Button_Click_6"/>
-                        <Button Style="{DynamicResource ButtonStyle1}" Content="Удалить ключ"  Canvas.Top="120" Canvas.Left="410" Click="Button_Click_7"/>
-                        <Button Style="{DynamicResource ButtonStyle1}" Content="Отправить ключ"  Canvas.Top="120" Canvas.Left="590" Click="Button_Click_8"/>
+                        <Button Style="{DynamicResource ButtonStyle1}" Content="Сгенерировать ключ" Canvas.Top="120" Canvas.Left="50" 
+                              Command="{Binding GenerateAsymmetricCommand}" />
+                        <Button Style="{DynamicResource ButtonStyle1}" Content="Установить ключ" Canvas.Top="120" Canvas.Left="230"
+                               Command="{Binding SetAsymmetricCommand}" />
+                        <Button Style="{DynamicResource ButtonStyle1}" Content="Удалить ключ"  Canvas.Top="120" Canvas.Left="410"
+                                Command="{Binding DelAsymmetricCommand}" />
+                        <Button Style="{DynamicResource ButtonStyle1}" Content="Отправить ключ"  Canvas.Top="120" Canvas.Left="590"
+                                Command="{Binding SendAsymmetricCommand}" />
                         
                     </Canvas>
                 </TabItem.Content>

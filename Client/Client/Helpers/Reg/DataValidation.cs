@@ -5,7 +5,7 @@ using Client.Interfaces;
 namespace Client.Helpers
 {
     public class DataValidation
-    {
+    {       
         public static string IsValid(string name, string email, string password, string confpassword)
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(confpassword))

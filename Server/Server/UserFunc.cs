@@ -2,14 +2,14 @@
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
-using Server.Models;
 using System.Security.Cryptography;
+using Server.Models;
 using Server.Crypt;
 using Server.Helpers;
 using Server.Interfaces;
 
 namespace Server
-{
+{ 
     public class UsersFunc
     {
         #region Блок переменных и свойств
@@ -54,6 +54,8 @@ namespace Server
             _userThread.Start();      
         }
 
+        #region Блок прослушивания и обработчика команд
+
         private void Listner()
         {
             try
@@ -70,7 +72,7 @@ namespace Server
                     {
                         string command = AESCrypt.AESDecrypt(mess, session_key).Result;
                         HandleCommand(command); // Отправка сообщения на обработку
-                    }   
+                    }
                     else
                     {
                         session_key = RSACrypt.RSADecrypt(mess, privateKey);
@@ -81,9 +83,9 @@ namespace Server
             }
             catch (Exception exp)
             {
-                if(me != null)
+                if (me != null)
                     showInfo.ShowMessage($"{Me.UserName} - Ошибка блока прослушивания: " + exp.Message);
-                
+
                 Server.EndUser(this);
             }
         }
@@ -120,7 +122,7 @@ namespace Server
                                 case 2:
                                     Send("#regfault|Электронная почта уже занята");
                                     continue;
-                            }                      
+                            }
 
                             byte[] salt = Hash.GenerateSalt();
 
@@ -240,14 +242,14 @@ namespace Server
                     }
 
                     if (currentCommand.Contains("delete")) // Удаление из друзей
-                    {  
+                    {
                         string unfriendlyNick = currentCommand.Split('|')[1];
                         Server.RemoveFriendShip(Me.UserName, unfriendlyNick);
 
                         UsersFunc unfr = Server.GetUserByNick(unfriendlyNick);
                         if (unfr != null)
                             unfr.Send($"#remtolist|{Me.UserName}");
-                                        
+
                         continue;
                     }
 
@@ -318,11 +320,13 @@ namespace Server
                 }
 
             }
-            catch (Exception exp) 
+            catch (Exception exp)
             {
-                showInfo.ShowMessage($"{Me.UserName} - Ошибка обработчика команд: " + exp.Message); 
+                showInfo.ShowMessage($"{Me.UserName} - Ошибка обработчика команд: " + exp.Message);
             }
         }
+
+        #endregion
 
         #region Блок обработки основных сценариев
 

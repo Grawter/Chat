@@ -2,8 +2,8 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Client.Interfaces;
 using Client.Helpers;
+using Client.Interfaces;
 
 namespace Client.Crypt
 {

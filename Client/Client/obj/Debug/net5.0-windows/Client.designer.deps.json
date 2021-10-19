@@ -6,6 +6,14 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v5.0": {
+      "Microsoft.Xaml.Behaviors.Wpf/1.1.37": {
+        "runtime": {
+          "lib/net5.0-windows7.0/Microsoft.Xaml.Behaviors.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.37.31167"
+          }
+        }
+      },
       "Syncfusion.Licensing/19.3.0.45": {
         "runtime": {
           "lib/net5.0/Syncfusion.Licensing.dll": {
@@ -40,6 +48,13 @@
     }
   },
   "libraries": {
+    "Microsoft.Xaml.Behaviors.Wpf/1.1.37": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-TxH7g5I/4UzOHfs0GqD1W4evdl7DIHOQCr/KWc4G4BkgtsAhaHHXAW5JbKrkB7cqClN0JYOX6j9/4v4emCjFIA==",
+      "path": "microsoft.xaml.behaviors.wpf/1.1.37",
+      "hashPath": "microsoft.xaml.behaviors.wpf.1.1.37.nupkg.sha512"
+    },
     "Syncfusion.Licensing/19.3.0.45": {
       "type": "package",
       "serviceable": true,

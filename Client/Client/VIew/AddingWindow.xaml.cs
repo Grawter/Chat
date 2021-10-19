@@ -1,27 +1,19 @@
-﻿using Client.Helpers;
-using Client.Interfaces;
-using System.Windows;
+﻿using System.Windows;
+using Client.ViewModel;
 
 namespace Client
 {
     public partial class AddingWindow : Window
     {
-        IShowInfo showInfo = new ShowInfo();
         public AddingWindow()
         {
             InitializeComponent();
+            this.Closing += AddingWindow_Closing;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void AddingWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) // При закрытии окна
         {
-            if (!string.IsNullOrWhiteSpace(TB1.Text))
-            {
-                (Owner as ChatWindow).AddFriend(TB1.Text);
-                Owner.Show();
-                this.Close();
-            }
-            else
-                showInfo.ShowMessage("Имя не указано", 2);
+            (DataContext as AddingViewModel).CloseCommand.Execute(null);
         }
     }
 }

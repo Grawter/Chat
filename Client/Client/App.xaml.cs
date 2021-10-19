@@ -1,17 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
+using Client.Helpers.ViewModel;
+using Client.ViewModel;
 
 namespace Client
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
+        public DisplayRootRegistry displayRootRegistry = new DisplayRootRegistry();
+        AuthViewModel AuthViewModel;
+
+        public App()
+        {
+            displayRootRegistry.RegisterWindowType<AuthViewModel, AuthWindow>();
+            displayRootRegistry.RegisterWindowType<RegViewModel, RegWindow>();
+            displayRootRegistry.RegisterWindowType<ChatViewModel, ChatWindow>();
+            displayRootRegistry.RegisterWindowType<AddingViewModel, AddingWindow>();
+            displayRootRegistry.RegisterWindowType<KeySetViewModel, KeySetWindow>();
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            AuthViewModel = new AuthViewModel();
+
+            displayRootRegistry.ShowPresentation(AuthViewModel);
+
+        }
     }
 }

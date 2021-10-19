@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\Client.csproj": {}
+    "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\Client.csproj": {}
   },
   "projects": {
-    "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\Client.csproj": {
+    "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\Client.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\Client.csproj",
+        "projectUniqueName": "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\Client.csproj",
         "projectName": "Client",
-        "projectPath": "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\Client.csproj",
+        "projectPath": "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\Client.csproj",
         "packagesPath": "C:\\Users\\termi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\obj\\",
+        "outputPath": "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\termi\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -40,6 +40,10 @@
         "net5.0-windows7.0": {
           "targetAlias": "net5.0-windows",
           "dependencies": {
+            "Microsoft.Xaml.Behaviors.Wpf": {
+              "target": "Package",
+              "version": "[1.1.37, )"
+            },
             "Syncfusion.SfInput.WPF": {
               "target": "Package",
               "version": "[19.3.0.45, )"

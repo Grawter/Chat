@@ -18,5 +18,6 @@
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <PkgSyncfusion_Shared_WPF Condition=" '$(PkgSyncfusion_Shared_WPF)' == '' ">C:\Users\termi\.nuget\packages\syncfusion.shared.wpf\19.3.0.45</PkgSyncfusion_Shared_WPF>
     <PkgSyncfusion_SfInput_WPF Condition=" '$(PkgSyncfusion_SfInput_WPF)' == '' ">C:\Users\termi\.nuget\packages\syncfusion.sfinput.wpf\19.3.0.45</PkgSyncfusion_SfInput_WPF>
+    <PkgMicrosoft_Xaml_Behaviors_Wpf Condition=" '$(PkgMicrosoft_Xaml_Behaviors_Wpf)' == '' ">C:\Users\termi\.nuget\packages\microsoft.xaml.behaviors.wpf\1.1.37</PkgMicrosoft_Xaml_Behaviors_Wpf>
   </PropertyGroup>
 </Project>

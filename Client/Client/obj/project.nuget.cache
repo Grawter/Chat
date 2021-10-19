@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "H8jG1JTwkvd5PKKgar7ay2YV5pL8isBIABvn7K8sO/jDSKSE2G40c61Rvm/ssGKx4KslCC3fHBL7u71mtj8NpA==",
+  "dgSpecHash": "65MxGPggr51pIWZWvBKWaxnhOg34jkd910pD4L9+sZmzst+Ib5DBcWpySuN2/zRJXebSLjdTGIIGQEr6g5TPJQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\termi\\Source\\Repos\\Chat\\Client\\Client\\Client.csproj",
+  "projectFilePath": "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\Client.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\termi\\.nuget\\packages\\microsoft.xaml.behaviors.wpf\\1.1.37\\microsoft.xaml.behaviors.wpf.1.1.37.nupkg.sha512",
     "C:\\Users\\termi\\.nuget\\packages\\syncfusion.licensing\\19.3.0.45\\syncfusion.licensing.19.3.0.45.nupkg.sha512",
     "C:\\Users\\termi\\.nuget\\packages\\syncfusion.sfinput.wpf\\19.3.0.45\\syncfusion.sfinput.wpf.19.3.0.45.nupkg.sha512",
     "C:\\Users\\termi\\.nuget\\packages\\syncfusion.shared.wpf\\19.3.0.45\\syncfusion.shared.wpf.19.3.0.45.nupkg.sha512"

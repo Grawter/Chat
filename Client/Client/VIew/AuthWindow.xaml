@@ -58,7 +58,8 @@
         <Canvas Grid.Row="0">
 
             <Grid Canvas.Top="15" Canvas.Right="40">
-                <TextBox  Width="220"  VerticalAlignment="Center" HorizontalAlignment="Left" Name="TB1" Margin="5" FontSize="15"/>
+                <TextBox Name="TB1" Width="220"  VerticalAlignment="Center" HorizontalAlignment="Left"  Margin="5" FontSize="15" 
+                          Text="{Binding Nick, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBlock IsHitTestVisible="False" Text="Ник" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray" FontSize="15">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}">
@@ -74,7 +75,7 @@
             </Grid>
 
             <Grid Canvas.Top="50" Canvas.Right="40">
-                <PasswordBox Width="220"  VerticalAlignment="Center" HorizontalAlignment="Left" Name="PB1" Margin="5" FontSize="15">
+                <PasswordBox Name="PB1" Width="220" VerticalAlignment="Center" HorizontalAlignment="Left"  Margin="5" FontSize="15" >
                     <PasswordBox.Style>
                         <Style TargetType="PasswordBox">
                             <EventSetter Event="PasswordChanged" Handler="OnPasswordChange"/>
@@ -98,11 +99,14 @@
 
         </Canvas>
 
-        <TextBlock Grid.Row="0" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 85, 0, 0" MinWidth="0" FontSize="15" Foreground="#FFE0381D" FontWeight="Bold" Name="WarningTBlock" />
+        <TextBlock Grid.Row="0" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 85, 0, 0" MinWidth="0" FontSize="15" Foreground="#FFE0381D" FontWeight="Bold"
+                   Text="{Binding Status, UpdateSourceTrigger=PropertyChanged}" />
 
         <Canvas Grid.Row="1">
-            <Button Style="{DynamicResource ButtonStyle1}" Content="Регистрация" Canvas.Bottom="13" Canvas.Left="13" Click="Button_Click_1" />
-            <Button Style="{DynamicResource ButtonStyle1}" Content="Войти" Canvas.Bottom="13" Canvas.Right="13" IsDefault="True" Click="Button_Click_2" />
+            <Button Style="{DynamicResource ButtonStyle1}" Content="Регистрация" Canvas.Bottom="13" Canvas.Left="13" 
+                    Command="{Binding ToRegisterCommand}" />
+            <Button Style="{DynamicResource ButtonStyle1}" Content="Войти" Canvas.Bottom="13" Canvas.Right="13" IsDefault="True"  
+                    Command="{Binding LoginCommand}" />
         </Canvas>
 
     </Grid>

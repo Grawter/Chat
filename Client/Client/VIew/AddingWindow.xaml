@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="Добавление контакта" Height="150" Width="300" ResizeMode="NoResize" Icon="\Resources\ChatIcon.ico">
+        Title="Добавление контакта" Height="150" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="\Resources\ChatIcon.ico">
 
     <Window.Resources>
 
@@ -46,8 +46,9 @@
 
         <Canvas>
             <Grid Canvas.Top="20" Canvas.Left="50">
-                <TextBox Name="TB1" TextWrapping="Wrap" AcceptsReturn="True" Width="200" Height="25" FontSize="15" />
-                <TextBlock IsHitTestVisible="False" Text="Ник пользователя..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Foreground="DarkGray" FontSize="15">
+                <TextBox Name="TB1" TextWrapping="Wrap" AcceptsReturn="True" Width="200" Height="25" FontSize="15" Text="{Binding Friend, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock IsHitTestVisible="False" Text="Ник пользователя..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Foreground="DarkGray" 
+                           FontSize="15">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -61,9 +62,9 @@
                 </TextBlock>
             </Grid>
 
-            <Button Style="{DynamicResource ButtonStyle1}" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Top="60" Canvas.Left="70" Content="Добавить" Click="Button_Click"></Button>
+            <Button Style="{DynamicResource ButtonStyle1}" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Top="60" Canvas.Left="70" Content="Добавить"
+                     Command="{Binding AddCommand}"/>
         </Canvas>
-        
 
     </Grid>
 </Window>
