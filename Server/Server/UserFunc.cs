@@ -18,12 +18,15 @@ namespace Server
 
         private Thread _userThread;
 
-        RSAParameters publicKey;
-        RSAParameters privateKey;
+        private IAsymmCrypt AsymmCrypt = new RSACrypt();
+        private ISymmCrypt SymmCrypt = new AESCrypt();
 
-        byte[] session_key;
+        private RSAParameters publicKey;
+        private RSAParameters privateKey;
 
-        IShowInfo showInfo = new ShowInfo();
+        private byte[] session_key;
+
+        private IShowInfo showInfo = new ShowInfo();
 
         public User Me
         {
@@ -44,7 +47,7 @@ namespace Server
             RSA RSA = RSA.Create();
             publicKey = RSA.ExportParameters(false);
             privateKey = RSA.ExportParameters(true);
-            
+
             Send(publicKey.Modulus);
 
             _userThread = new Thread(Listner)
@@ -60,22 +63,29 @@ namespace Server
         {
             try
             {
-                while (_userHandle.Connected)
-                {
-                    byte[] buffer = new byte[32768];
-                    int bytesReceive = _userHandle.Receive(buffer); // Количество полученных байтов
+                byte[] buffer, mess;
+                int bytesReceive;
 
-                    byte[] mess = new byte[bytesReceive];
+                System.Collections.Generic.List<byte> ll = new();
+                while (_userHandle.Connected)
+                {                  
+                    buffer = new byte[32768];
+                    bytesReceive = _userHandle.Receive(buffer); // Количество полученных байтов
+
+                    mess = new byte[bytesReceive];
                     Array.Copy(buffer, mess, bytesReceive);
+                    buffer = null;
 
                     if (Handshake)
                     {
-                        string command = AESCrypt.AESDecrypt(mess, session_key).Result;
+                        string command = SymmCrypt.Decrypt(mess, session_key).Result;                    
+                        mess = null;
                         HandleCommand(command); // Отправка сообщения на обработку
                     }
                     else
                     {
-                        session_key = RSACrypt.RSADecrypt(mess, privateKey);
+                        session_key = AsymmCrypt.Decrypt(mess, privateKey);                        
+                        mess = null;
                         Handshake = true;
                     }
 
@@ -141,7 +151,7 @@ namespace Server
 
                             AuthSuccess = true;
 
-                            Send($"#connect|{me.UserName}");
+                            Send($"#connect|{me.UserName}|{SumByte(session_key)}");
                         }
                         else if (currentCommand.Contains("login"))
                         {
@@ -166,8 +176,7 @@ namespace Server
                                 Server.NewUser(this);
 
                                 AuthSuccess = true;
-
-                                Send($"#connect|{me.UserName}");
+                                Send($"#connect|{me.UserName}|{SumByte(session_key)}");
 
                                 string userList = FriendsList.GetList(ref me);
 
@@ -235,7 +244,7 @@ namespace Server
                         string unfriendlyNick = currentCommand.Split('|')[1];
 
                         UsersFunc unfriend = Server.GetUserByNick(unfriendlyNick);
-                        if (unfriend != null)
+                        if (unfriend != null && !unfriend.Silence_mode)
                             unfriend.Send($"#failusersuccess|{Me.UserName}");
 
                         continue;
@@ -298,7 +307,7 @@ namespace Server
                         continue;
                     }
 
-                    if (currentCommand.Contains("sendRSA")) // Обмен ключами
+                    if (currentCommand.Contains("sendAsymm")) // Обмен ключами
                     {
                         string TargetName = currentCommand.Split('|')[1];
                         string publickey = currentCommand.Split('|')[2];
@@ -311,7 +320,7 @@ namespace Server
                             continue;
                         }
 
-                        targetUser.Send($"#giveRSA|{Me.UserName}|{publickey}");
+                        targetUser.Send($"#giveAsymm|{Me.UserName}|{publickey}");
 
                         continue;
                     }
@@ -330,11 +339,11 @@ namespace Server
 
         #region Блок обработки основных сценариев
 
-        public void Send(string buffer) // Отослать сообщение в формате строки
+        private void Send(string buffer) // Отослать сообщение в формате строки
         {
             try
             {
-                byte[] command = AESCrypt.AESEncrypt(buffer, session_key).Result;
+                byte[] command = SymmCrypt.Encrypt(buffer, session_key).Result;
                 _userHandle.Send(command);
             }
             catch (Exception exp)
@@ -343,7 +352,7 @@ namespace Server
             }
         }
 
-        public void Send(byte[] buffer) // Отослать сообщение в формате массива байтов
+        private void Send(byte[] buffer) // Отослать сообщение в формате массива байтов
         {
             try
             {
@@ -353,7 +362,7 @@ namespace Server
             {
                 showInfo.ShowMessage($"{Me.UserName} - Ошибка при отправке массива байт: " + exp.Message);
             }
-        }     
+        }
 
         public void End() // Завершение сессии сокета
         {
@@ -366,6 +375,22 @@ namespace Server
                 showInfo.ShowMessage($"{Me.UserName} - Ошибка при завершении сессии: " + exp.Message);
             }
 
+        }
+
+        #endregion
+
+        #region Блок вспомогательных сценариев
+
+        private int SumByte(byte[] mas)
+        {
+            int sum = 0;
+
+            foreach (var item in mas)
+            {
+                sum += item;
+            }
+
+            return sum;
         }
 
         #endregion

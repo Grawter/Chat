@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Iod3MSNySn0lMRiM8Ff9tTOLnahGBwmYICAngUi2OtQ4QWcpDca972wPVL0CLOccbHUDWZiz0lxnpBeiUGNWPQ==",
+  "dgSpecHash": "KxmjOmkbbjKl1q6spLUSgDYDReLWueqBTMbNJvGzivHsELAOdhdUryFiOpitjV7GhZwrUDST2TlPsa0HXC4nQg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\termi\\Desktop\\Chat\\Server\\Server\\Server.csproj",
+  "projectFilePath": "C:\\Users\\termi\\source\\repos\\WPF-Chat\\Server\\Server\\Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\termi\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\termi\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

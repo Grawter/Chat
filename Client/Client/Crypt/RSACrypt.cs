@@ -6,11 +6,11 @@ using Client.Interfaces;
 
 namespace Client.Crypt
 {
-    public class RSACrypt
+    public class RSACrypt : IAsymmCrypt
     {
-        static IShowInfo showInfo = new ShowInfo();
+        IShowInfo showInfo = new ShowInfo();
 
-        static public byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo)
+        public byte[] Encrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace Client.Crypt
             }
         }
 
-        static public byte[] RSAEncrypt_Str(string Text, RSAParameters RSAKeyInfo)
+        public byte[] Encrypt_Str(string Text, RSAParameters RSAKeyInfo)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace Client.Crypt
             }
             catch (Exception)
             {
-                throw new Exception("Было принято сообщение, но его удалось не расшифровать");
+                throw new Exception("Не удалось зашифровать сообщение");
             }
             //catch (Exception ex)
             //{
@@ -46,7 +46,7 @@ namespace Client.Crypt
             //}
         }
 
-        static public byte[] RSADecrypt(byte[] DataToDecrypt, RSAParameters RSAKeyInfo)
+        public byte[] Decrypt(byte[] DataToDecrypt, RSAParameters RSAKeyInfo)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace Client.Crypt
             }
         }
 
-        static public string RSADecrypt_Str(byte[] DataToDecrypt, RSAParameters RSAKeyInfo)
+        public string Decrypt_Str(byte[] DataToDecrypt, RSAParameters RSAKeyInfo)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace Client.Crypt
             }
             catch (Exception)
             {
-                throw new Exception("Было принято сообщение, но его удалось не расшифровать");
+                throw new Exception("Было принято сообщение, но его не удалось расшифровать");
             }
             //catch (Exception ex)
             //{

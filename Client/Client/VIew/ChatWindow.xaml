@@ -25,14 +25,14 @@
                    Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" />
         <Canvas Grid.Column="0" Grid.Row="0">
             <TextBlock Canvas.Top="5" Canvas.Left="10" Text="Чат:" FontSize="15" />
-            <TextBox Canvas.Top="35" Canvas.Left="20" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" FontSize="13" Width="530" Height="310"
+            <TextBox Canvas.Top="35" Canvas.Left="20" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" IsReadOnly="True" FontSize="13" Width="530" Height="310"
                      Text="{Binding Chat, UpdateSourceTrigger=PropertyChanged}"/>
         </Canvas>
 
         <Canvas Grid.Column="0" Grid.Row="1">
 
             <Grid Canvas.Top="17" Canvas.Left="20">
-                <TextBox Name="TB2" TextWrapping="Wrap" AcceptsReturn="True" Width="450" Height="38" FontSize="13" 
+                <TextBox Name="TB2" TextWrapping="Wrap" AcceptsReturn="True" Width="450" Height="38" FontSize="13"
                          Text="{Binding Message, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBlock IsHitTestVisible="False" Text="Введите сообщение..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray" 
                            FontSize="15">
@@ -92,7 +92,7 @@
 
                 <ListBox.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Установить ключ" Command="{Binding SetKeyCommand}"></MenuItem>
+                        <MenuItem Header="Сквозное шифрование" Command="{Binding SetKeyCommand}"></MenuItem>
                         <MenuItem Header="Удалить" Command="{Binding DelCommand}"></MenuItem>
                     </ContextMenu>
                 </ListBox.ContextMenu>
@@ -102,6 +102,13 @@
 
         <TextBlock Grid.Column="1" Grid.Row="0" Text="Друзья:" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,5,0,0" FontSize="15"/>
         <Canvas Grid.Column="1" Grid.Row="1"  Background="#FFA4CDFF">
+
+            <TextBlock HorizontalAlignment="Right" Margin="10 50 0 0" FontSize="11" FontStyle="Italic" FontWeight="Bold" Foreground="Black" 
+                   Text="{Binding Sum1, UpdateSourceTrigger=PropertyChanged}" ToolTip="Согласованность ключей" />
+            <TextBlock HorizontalAlignment="Right" Margin="35 50 0 0" FontSize="11" FontStyle="Italic" FontWeight="Bold" Foreground="Black" 
+                   Text="/" ToolTip="Согласованность ключей" />
+            <TextBlock HorizontalAlignment="Right" Margin="40 50 0 0" FontSize="11" FontStyle="Italic" FontWeight="Bold" Foreground="Black" 
+                   Text="{Binding Sum2, UpdateSourceTrigger=PropertyChanged}" ToolTip="Согласованность ключей" />
             <CheckBox Content="Не беспокоить" Canvas.Top="25" Canvas.Left="20" IsChecked="{Binding Silencemode}" 
                       Command="{Binding SilenceCommand}"/>
             <Button Height="40" Width="40" Canvas.Left="168" Canvas.Top="13" Background="WhiteSmoke" 

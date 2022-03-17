@@ -7,11 +7,11 @@ using Client.Interfaces;
 
 namespace Client.Crypt
 {
-    public class AESCrypt
+    public class AESCrypt : ISymmCrypt
     {
-        static IShowInfo showInfo = new ShowInfo();
+        IShowInfo showInfo = new ShowInfo();
 
-        public static async Task<byte[]> AESEncrypt(string message, byte[] key)
+        public async Task<byte[]> Encrypt(string message, byte[] key)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace Client.Crypt
             }
         }
 
-        public static async Task<string> AESDecrypt(byte[] enc_mess, byte[] key)
+        public async Task<string> Decrypt(byte[] enc_mess, byte[] key)
         {
             try
             {

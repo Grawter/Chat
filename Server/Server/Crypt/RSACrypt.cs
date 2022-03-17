@@ -1,11 +1,12 @@
 ﻿using System;
+using Server.Interfaces;
 using System.Security.Cryptography;
 
 namespace Server.Crypt
 {
-    public class RSACrypt
+    public class RSACrypt : IAsymmCrypt
     {
-        static public byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo)
+        public byte[] Encrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo)
         {
             try
             {
@@ -20,7 +21,7 @@ namespace Server.Crypt
             }
         }
 
-        static public byte[] RSADecrypt(byte[] DataToDecrypt, RSAParameters RSAKeyInfo)
+        public byte[] Decrypt(byte[] DataToDecrypt, RSAParameters RSAKeyInfo)
         {
             try
             {

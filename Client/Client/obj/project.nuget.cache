@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "65MxGPggr51pIWZWvBKWaxnhOg34jkd910pD4L9+sZmzst+Ib5DBcWpySuN2/zRJXebSLjdTGIIGQEr6g5TPJQ==",
+  "dgSpecHash": "/OXvm2Do8JOdKsoT7uEQ7RONjGZwFNNgyaAf6NohbmEg1fwCiQ50InwAsj8FadyeOvhCzTWSBO2btItJ+xBsoA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\termi\\Desktop\\Chat\\Client\\Client\\Client.csproj",
+  "projectFilePath": "C:\\Users\\termi\\source\\repos\\WPF-Chat\\Client\\Client\\Client.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\termi\\.nuget\\packages\\microsoft.xaml.behaviors.wpf\\1.1.37\\microsoft.xaml.behaviors.wpf.1.1.37.nupkg.sha512",
     "C:\\Users\\termi\\.nuget\\packages\\syncfusion.licensing\\19.3.0.45\\syncfusion.licensing.19.3.0.45.nupkg.sha512",

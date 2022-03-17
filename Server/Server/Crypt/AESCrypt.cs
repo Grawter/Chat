@@ -1,13 +1,14 @@
 ﻿using System;
+using Server.Interfaces;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace Server.Crypt
 {
-    public class AESCrypt
+    public class AESCrypt : ISymmCrypt
     {
-        public static async Task <byte[]> AESEncrypt(string message, byte[] key)
+        public async Task <byte[]> Encrypt(string message, byte[] key)
         {
             try
             {
@@ -44,7 +45,7 @@ namespace Server.Crypt
             }
         }
 
-        public static async Task <string> AESDecrypt(byte[] enc_mess, byte[] key)
+        public async Task <string> Decrypt(byte[] enc_mess, byte[] key)
         {
             try
             {

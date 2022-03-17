@@ -102,7 +102,7 @@
 
                 <TabItem.Content>
                     <Canvas Background="Beige">
-                        <TextBlock Canvas.Top="5" Canvas.Left="10" Text="Публичный ключ:" FontSize="12" />
+                        <TextBlock Canvas.Top="5" Canvas.Left="10" Text="Мой публичный ключ:" FontSize="12" />
                         <TextBox  Canvas.Top="31" Canvas.Left="10" Width="350" IsReadOnly="True"
                                   Text="{Binding Current_Asimmetric_Key_Str, UpdateSourceTrigger=PropertyChanged}" />
                         <Button Canvas.Top="20" Canvas.Left="370" Height="40" Width="30" 
@@ -110,12 +110,12 @@
                             <Image Source="/Resources/Clipboard.png"/>
                         </Button>
 
-                        <TextBlock Canvas.Top="5" Canvas.Left="427" Text="Приватный ключ" FontSize="12" />
+                        <TextBlock Canvas.Top="5" Canvas.Left="427" Text="Публичный ключ" FontSize="12" />
                         <TextBlock Canvas.Top="5" Canvas.Left="525" FontSize="12" FontWeight="Black"
                                    Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBox Canvas.Top="31" Canvas.Right="10"  Width="350"
-                                  Text="{Binding UserNameRSA_Str, UpdateSourceTrigger=PropertyChanged}" />
+                                  Text="{Binding UserNameAsymm_Str, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBlock Canvas.Top="65" Canvas.Left="10" Text="Чем больше длина, тем больше требуется вычислительных ресурсов"/>
                         <TextBlock Canvas.Top="86" Canvas.Left="10" Text="Длина ключа (бит)"/>
@@ -136,7 +136,7 @@
                         <Button Style="{DynamicResource ButtonStyle1}" Content="Удалить ключ"  Canvas.Top="120" Canvas.Left="410"
                                 Command="{Binding DelAsymmetricCommand}" />
                         <Button Style="{DynamicResource ButtonStyle1}" Content="Отправить ключ"  Canvas.Top="120" Canvas.Left="590"
-                                Command="{Binding SendAsymmetricCommand}" />
+                                Command="{Binding SendAsymmetricCommand}" ToolTip="Перед отправкой не забудьте установить ключ для себя" />
                         
                     </Canvas>
                 </TabItem.Content>

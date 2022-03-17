@@ -1576,11 +1576,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\termi\\Desktop\\Chat\\Server\\Server\\Server.csproj",
+      "projectUniqueName": "C:\\Users\\termi\\source\\repos\\WPF-Chat\\Server\\Server\\Server.csproj",
       "projectName": "Server",
-      "projectPath": "C:\\Users\\termi\\Desktop\\Chat\\Server\\Server\\Server.csproj",
+      "projectPath": "C:\\Users\\termi\\source\\repos\\WPF-Chat\\Server\\Server\\Server.csproj",
       "packagesPath": "C:\\Users\\termi\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\termi\\Desktop\\Chat\\Server\\Server\\obj\\",
+      "outputPath": "C:\\Users\\termi\\source\\repos\\WPF-Chat\\Server\\Server\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\termi\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -1645,7 +1645,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.402\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.406\\RuntimeIdentifierGraph.json"
       }
     }
   }

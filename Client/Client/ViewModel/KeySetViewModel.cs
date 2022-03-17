@@ -56,16 +56,16 @@ namespace Client.ViewModel
         }
         private (RSAParameters, RSAParameters) current_Asimmetric_Key;
 
-        public string UserNameRSA_Str
+        public string UserNameAsymm_Str
         {
-            get { return usernameRSA_Str; }
+            get { return usernameAsymm_Str; }
             set
             {
-                usernameRSA_Str = value;
+                usernameAsymm_Str = value;
                 OnPropertyChanged();
             }
         }
-        private string usernameRSA_Str;
+        private string usernameAsymm_Str;
         
         #endregion
 
@@ -98,7 +98,7 @@ namespace Client.ViewModel
                       try
                       {
                           byte[] key_mass = ByteConvStr.StrToByte(Current_Simmetric_Key_Str);
-                          ((ChatViewModel)displayRootRegistry.GetParent(this)).SetAES(UserName, key_mass);
+                          ((ChatViewModel)displayRootRegistry.GetParent(this)).SetSimmKey(UserName, key_mass);
                           showInfo.ShowMessage("Ключ установлен");
                       }
                       catch (OverflowException)
@@ -147,7 +147,7 @@ namespace Client.ViewModel
 
         #region Блок команд для асимметричного ключа
 
-        //команда копирование асимметричного ключа
+        //команда генерирования асимметричного ключа
         private RelayCommand generateasymmetricCommand;
         public RelayCommand GenerateAsymmetricCommand
         {
@@ -189,13 +189,13 @@ namespace Client.ViewModel
 
                       if (Current_Asimmetric_Key.Item1.Modulus != null && Current_Asimmetric_Key.Item2.Modulus != null)
                       {
-                          ((ChatViewModel)displayRootRegistry.GetParent(this)).SetMyRSA(UserName, ref current_Asimmetric_Key);
+                          ((ChatViewModel)displayRootRegistry.GetParent(this)).SetMyAsymmKey(UserName, ref current_Asimmetric_Key);
                           send = true;
                       }
                            
-                      if(!string.IsNullOrWhiteSpace(UserNameRSA_Str))
+                      if(!string.IsNullOrWhiteSpace(UserNameAsymm_Str))
                       {
-                          ((ChatViewModel)displayRootRegistry.GetParent(this)).SetOtherRSA(UserName, ref usernameRSA_Str);
+                          ((ChatViewModel)displayRootRegistry.GetParent(this)).SetOtherAsymmKey(UserName, ref usernameAsymm_Str);
                           send = true;
                       }
                           
@@ -218,7 +218,7 @@ namespace Client.ViewModel
                       ((ChatViewModel)displayRootRegistry.GetParent(this)).DelKey(UserName, false);
                       showInfo.ShowMessage("Ключ удалён");
                       Current_Asimmetric_Key_Str = "";
-                      UserNameRSA_Str = "";
+                      UserNameAsymm_Str = "";
                   }));
             }
         }
@@ -233,7 +233,7 @@ namespace Client.ViewModel
                   (sendasymmetricCommand = new RelayCommand(obj =>
                   {
                       if (Current_Asimmetric_Key.Item1.Modulus != null && Current_Asimmetric_Key.Item2.Modulus != null)                     
-                          ((ChatViewModel)displayRootRegistry.GetParent(this)).SendRSA(UserName, Current_Asimmetric_Key_Str);
+                          ((ChatViewModel)displayRootRegistry.GetParent(this)).SendAsymm(UserName, Current_Asimmetric_Key_Str);
                                          
                   }));
             }

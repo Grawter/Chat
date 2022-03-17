@@ -15,7 +15,7 @@ namespace Client.ViewModel
 {
     class ChatViewModel : ViewModelBase
     {         
-        #region Блок переменных, свойств
+        #region Блок переменных, свойств, интерфейсов
 
         private const string _host = "127.0.0.1";
         private const int _port = 2222;
@@ -23,13 +23,39 @@ namespace Client.ViewModel
         private Socket _serverSocket;
         private Thread listenThread;
 
-        private RSAParameters RSAKeyInfo;
+        private IShowInfo showInfo;
+        private IAsymmCrypt AsymmCrypt;
+        private ISymmCrypt SymmCrypt;
+
+        private RSAParameters SupportingAsimmKey;
         private byte[] session_key;
         private Dictionary<string, byte[]> Simmetric_Keys;
         private Dictionary<string, (RSAParameters, RSAParameters)> Personal_Asimmetric_Keys;
         private Dictionary<string, RSAParameters> Asimmetric_Keys;
 
-        private Dictionary<string, string> DataChat;            
+        private Dictionary<string, string> DataChat;
+
+        public string Sum1
+        {
+            get { return sum1; }
+            set 
+            { 
+                sum1 = value;
+                OnPropertyChanged();
+            }
+        }
+        private string sum1;
+
+        public string Sum2
+        {
+            get { return sum2; }
+            set
+            {
+                sum2 = value;
+                OnPropertyChanged();
+            }
+        }
+        private string sum2;
 
         public string UserName
         {
@@ -68,15 +94,17 @@ namespace Client.ViewModel
         public string SelectedName { get; set; }
         public ObservableCollection<string> Friends { get; set; }        
 
-
         DisplayRootRegistry displayRootRegistry;
-        IShowInfo showInfo = new ShowInfo();
-
+        
         #endregion
 
         public ChatViewModel()
         {
-            RSAKeyInfo = new RSAParameters { Exponent = new byte[] { 1, 0, 1 } };
+            showInfo = new ShowInfo();
+            AsymmCrypt = new RSACrypt();
+            SymmCrypt = new AESCrypt();
+
+            SupportingAsimmKey = new RSAParameters { Exponent = new byte[] { 1, 0, 1 } }; 
 
             Friends = new ObservableCollection<string>();
             displayRootRegistry = (Application.Current as App).displayRootRegistry;
@@ -100,8 +128,7 @@ namespace Client.ViewModel
                 {
                     byte[] buffer = new byte[256];
                     int bytesReceive = _serverSocket.Receive(buffer);
-                    RSAKeyInfo.Modulus = buffer;
-
+                    SupportingAsimmKey.Modulus = buffer;
                     listenThread = new Thread(listner);
                     listenThread.IsBackground = true;
                     listenThread.Start();
@@ -126,8 +153,8 @@ namespace Client.ViewModel
 
                     byte[] mess = new byte[bytesReceive];
                     Array.Copy(buffer, mess, bytesReceive);
-
-                    string command = AESCrypt.AESDecrypt(mess, session_key).Result;
+                    
+                    string command = SymmCrypt.Decrypt(mess, session_key).Result;
                     handleCommand(command);
                 }
             }
@@ -163,6 +190,13 @@ namespace Client.ViewModel
 
                         Chat = "Подключение выполнено!";
                         UserName = currentCommand.Split('|')[1];
+                        Sum2 = currentCommand.Split('|')[2];
+
+                        if (Sum1 != Sum2)
+                        {
+                            showInfo.ShowMessage("Ключи не согласованны! Завершение сеанса",3);
+                            Application.Current.Dispatcher.Invoke(delegate { CloseCommand.Execute(null); });
+                        }
 
                         continue;
                     }
@@ -290,7 +324,7 @@ namespace Client.ViewModel
                         if (Simmetric_Keys.ContainsKey(from) && mode == 1)
                         {
                             byte[] enc_mass = Convert.FromBase64String(message);
-                            string dec_mess = AESCrypt.AESDecrypt(enc_mass, Simmetric_Keys[from]).Result;
+                            string dec_mess = SymmCrypt.Decrypt(enc_mass, Simmetric_Keys[from]).Result;
 
                             DataChat[from] += Environment.NewLine + from + "**: " + dec_mess;
                             AddMessage(dec_mess, from, true);
@@ -298,7 +332,7 @@ namespace Client.ViewModel
                         else if (Personal_Asimmetric_Keys.ContainsKey(from) && mode == 2)
                         {
                             byte[] enc_mass = Convert.FromBase64String(message);
-                            string dec_mess = RSACrypt.RSADecrypt_Str(enc_mass, Personal_Asimmetric_Keys[from].Item2);
+                            string dec_mess = AsymmCrypt.Decrypt_Str(enc_mass, Personal_Asimmetric_Keys[from].Item2);
 
                             DataChat[from] += Environment.NewLine + from + "**: " + dec_mess;
                             AddMessage(dec_mess, from, true);
@@ -315,13 +349,13 @@ namespace Client.ViewModel
                         continue;
                     }
 
-                    if (currentCommand.Contains("giveRSA")) // Получение публичного RSA ключа
+                    if (currentCommand.Contains("giveAsymm")) // Получение публичного асимметричного ключа
                     {
                         string from = currentCommand.Split('|')[1];
                         string key = currentCommand.Split('|')[2];
 
-                        SetOtherRSA(from, ref key);
-                        showInfo.ShowMessage("Получен RSA ключ от " + from);
+                        SetOtherAsymmKey(from, ref key);
+                        showInfo.ShowMessage("Получен асимметричный ключ от " + from);
                         continue;
                     }
 
@@ -345,7 +379,8 @@ namespace Client.ViewModel
         {
             Aes aes = Aes.Create();
             session_key = aes.Key;
-            Send(RSACrypt.RSAEncrypt(session_key, RSAKeyInfo));
+            Send(AsymmCrypt.Encrypt(session_key, SupportingAsimmKey));
+            Sum1 = SumByte(session_key).ToString();
 
             if (login)
                 Login(Nick, Password);
@@ -371,7 +406,7 @@ namespace Client.ViewModel
                 Send($"#findbynick|{name}");
         }
 
-        public void SetAES(string name, byte[] key) // Установить AES ключ
+        public void SetSimmKey(string name, byte[] key) // Установить симметричный ключ
         {
             if (Simmetric_Keys.ContainsKey(name))
                 Simmetric_Keys[name] = key;
@@ -379,20 +414,19 @@ namespace Client.ViewModel
                 Simmetric_Keys.Add(name, key);
         }
 
-        public void SetMyRSA(string name, ref (RSAParameters, RSAParameters) Mykey) // Установить свой RSA ключ
+        public void SetMyAsymmKey(string name, ref (RSAParameters, RSAParameters) Mykey) // Установить свой асимметричный ключ
         {
             Personal_Asimmetric_Keys[name] = Mykey;
-
         }
 
-        public void SetOtherRSA(string name, ref string OtherKey) // Установить чужой RSA ключ
+        public void SetOtherAsymmKey(string name, ref string OtherKey) // Установить чужой асимметричный ключ
         {
             Asimmetric_Keys[name] = new RSAParameters { Exponent = new byte[] { 1, 0, 1 }, Modulus = Convert.FromBase64String(OtherKey) };
         }
 
-        public void SendRSA(string name, string key) // Отправка публичного ключа
+        public void SendAsymm(string name, string key) // Отправка публичного ключа
         {
-            Send($"#sendRSA|{name}|{key}");
+            Send($"#sendAsymm|{name}|{key}");
         }
 
         public void DelKey(string name, bool type) // Удаление ключа
@@ -410,7 +444,7 @@ namespace Client.ViewModel
         {
             try
             {
-                byte[] command = AESCrypt.AESEncrypt(buffer, session_key).Result;
+                byte[] command = SymmCrypt.Encrypt(buffer, session_key).Result;
                 _serverSocket.Send(command);
             }
             catch (Exception exp)
@@ -444,7 +478,7 @@ namespace Client.ViewModel
                 {
                     DataChat[to] += Environment.NewLine + UserName + "**: " + msgData;
 
-                    string crp_mess = Convert.ToBase64String(AESCrypt.AESEncrypt(msgData, Simmetric_Keys[to]).Result);
+                    string crp_mess = Convert.ToBase64String(SymmCrypt.Encrypt(msgData, Simmetric_Keys[to]).Result);
                     Send($"#message|{to}|1|{crp_mess}");
                     AddMessage(msgData, UserName, true);
                 }
@@ -452,7 +486,7 @@ namespace Client.ViewModel
                 {
                     DataChat[to] += Environment.NewLine + UserName + "**: " + msgData;
 
-                    string crp_mess = Convert.ToBase64String(RSACrypt.RSAEncrypt_Str(msgData, Asimmetric_Keys[to]));
+                    string crp_mess = Convert.ToBase64String(AsymmCrypt.Encrypt_Str(msgData, Asimmetric_Keys[to]));
                     Send($"#message|{to}|2|{crp_mess}");
                     AddMessage(msgData, UserName, true);
                 }
@@ -468,11 +502,11 @@ namespace Client.ViewModel
             Message = "";
         }
 
-        private void AddMessage(string message, string from, bool ds = false) // Отображение нового сообщения в чате 
+        private void AddMessage(string message, string from, bool deepsecure = false) // Отображение нового сообщения в чате 
         {
             if (from == UserName || from == SelectedName)
             {
-                if (ds)
+                if (deepsecure)
                     Chat += $"{from}**: {message}" + Environment.NewLine;
                 else
                     Chat += $"{from}: {message}" + Environment.NewLine;
@@ -483,6 +517,22 @@ namespace Client.ViewModel
         {
             Chat = "";
             Chat += Content + Environment.NewLine;
+        }
+
+        #endregion
+
+        #region Блок вспомогательных сценариев
+
+        private int SumByte(byte[] mas)
+        {
+            int sum = 0;
+
+            foreach (var item in mas)
+            {
+                sum += item;
+            }
+
+            return sum;
         }
 
         #endregion
@@ -529,7 +579,7 @@ namespace Client.ViewModel
             }
         }
 
-        // команда перехода к установлению ключа
+        // команда перехода к установке сквозного шифрования
         private RelayCommand setkeyCommand;
         public RelayCommand SetKeyCommand
         {
@@ -556,9 +606,9 @@ namespace Client.ViewModel
                               KeySetViewModel.Current_Asimmetric_Key = asim_current_key;
                           }
 
-                          RSAParameters friendRSA;
-                          if (Asimmetric_Keys.TryGetValue(SelectedName, out friendRSA))
-                              KeySetViewModel.UserNameRSA_Str = Convert.ToBase64String(friendRSA.Modulus);
+                          RSAParameters friendAsymm;
+                          if (Asimmetric_Keys.TryGetValue(SelectedName, out friendAsymm))
+                              KeySetViewModel.UserNameAsymm_Str = Convert.ToBase64String(friendAsymm.Modulus);
 
                           await displayRootRegistry.ShowModalPresentation(KeySetViewModel);
                       }
