@@ -10,6 +10,7 @@ using Client.Crypt;
 using Client.Helpers;
 using Client.Interfaces;
 using Client.Helpers.ViewModel;
+using System.Linq;
 
 namespace Client.ViewModel
 {
@@ -126,12 +127,24 @@ namespace Client.ViewModel
 
                 if (_serverSocket.Connected)
                 {
-                    byte[] buffer = new byte[256];
-                    int bytesReceive = _serverSocket.Receive(buffer);
-                    SupportingAsimmKey.Modulus = buffer;
-                    listenThread = new Thread(listner);
-                    listenThread.IsBackground = true;
-                    listenThread.Start();
+                    byte[] buffer1 = new byte[256];
+                    byte[] buffer2 = new byte[256];
+                    _serverSocket.Receive(buffer1);
+                    _serverSocket.Receive(buffer2);
+
+                    if (EDS.Check_byte(buffer1, buffer2))
+                    {
+                        SupportingAsimmKey.Modulus = buffer1;
+                        listenThread = new Thread(listner);
+                        listenThread.IsBackground = true;
+                        listenThread.Start();
+                    }
+                    else
+                    {
+                        showInfo.ShowMessage("Не удалось установить доверенное соединение! Завершение сеанса", 3);
+                        Application.Current.Shutdown();
+                    }
+                        
                 }
                 else
                     showInfo.ShowMessage("Связь с сервером не установлена.", 3);
@@ -155,7 +168,11 @@ namespace Client.ViewModel
                     Array.Copy(buffer, mess, bytesReceive);
                     
                     string command = SymmCrypt.Decrypt(mess, session_key).Result;
-                    handleCommand(command);
+                    string Sign = command.Split("|").Last();
+                    command = command.Substring(0, command.LastIndexOf("|"));
+
+                    if (EDS.Check_str(command, Sign))         
+                        handleCommand(command); 
                 }
             }
             catch

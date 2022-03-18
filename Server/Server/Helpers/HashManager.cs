@@ -10,8 +10,8 @@ namespace Server.Helpers
 
         public static string GenerateHash(string password, byte[] salt)
         {
-            byte[] round1 = Hash.GenerateSaltedHash(Encoding.Unicode.GetBytes(sec_word), salt);
-            byte[] round2 = Hash.GenerateSaltedHash(Encoding.Unicode.GetBytes(password), round1);
+            byte[] round1 = SHA256Hash.GenerateSaltedHash(Encoding.Unicode.GetBytes(sec_word), salt);
+            byte[] round2 = SHA256Hash.GenerateSaltedHash(Encoding.Unicode.GetBytes(password), round1);
             string result = Convert.ToBase64String(round2);
 
             return result;
@@ -19,11 +19,11 @@ namespace Server.Helpers
 
         public static bool Access(string password, byte[] salt, string hashpassword)
         {
-            byte[] round1 = Hash.GenerateSaltedHash(Encoding.Unicode.GetBytes(sec_word), salt);
-            byte[] round2 = Hash.GenerateSaltedHash(Encoding.Unicode.GetBytes(password), round1);
+            byte[] round1 = SHA256Hash.GenerateSaltedHash(Encoding.Unicode.GetBytes(sec_word), salt);
+            byte[] round2 = SHA256Hash.GenerateSaltedHash(Encoding.Unicode.GetBytes(password), round1);
             byte[] hashbyte = Convert.FromBase64String(hashpassword);
 
-            return Hash.CompareByteArrays(hashbyte, round2);
+            return SHA256Hash.CompareByteArrays(hashbyte, round2);
         }
     }
 }

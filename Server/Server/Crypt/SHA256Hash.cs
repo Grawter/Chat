@@ -2,7 +2,7 @@
 
 namespace Server.Crypt
 {
-    public class Hash
+    public class SHA256Hash
     {
         public static byte[] GenerateSalt()
         {

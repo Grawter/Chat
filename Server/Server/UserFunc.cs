@@ -44,11 +44,12 @@ namespace Server
         {
             _userHandle = handle;
 
-            RSA RSA = RSA.Create();
-            publicKey = RSA.ExportParameters(false);
-            privateKey = RSA.ExportParameters(true);
+            RSA AsimmKey = RSA.Create();
+            publicKey = AsimmKey.ExportParameters(false);
+            privateKey = AsimmKey.ExportParameters(true);
 
             Send(publicKey.Modulus);
+            Send(EDS.Sign_byte(publicKey.Modulus));
 
             _userThread = new Thread(Listner)
             {
@@ -134,7 +135,7 @@ namespace Server
                                     continue;
                             }
 
-                            byte[] salt = Hash.GenerateSalt();
+                            byte[] salt = SHA256Hash.GenerateSalt();
 
                             me = new User
                             {
@@ -343,7 +344,7 @@ namespace Server
         {
             try
             {
-                byte[] command = SymmCrypt.Encrypt(buffer, session_key).Result;
+                byte[] command = SymmCrypt.Encrypt(buffer + "|" + EDS.Sign_str(buffer), session_key).Result;
                 _userHandle.Send(command);
             }
             catch (Exception exp)
