@@ -425,4 +425,3 @@ C:\Users\termi\source\repos\C#\WPF-Chat\Server\Server\obj\Debug\net5.0\Server.dl
 C:\Users\termi\source\repos\C#\WPF-Chat\Server\Server\obj\Debug\net5.0\ref\Server.dll
 C:\Users\termi\source\repos\C#\WPF-Chat\Server\Server\obj\Debug\net5.0\Server.pdb
 C:\Users\termi\source\repos\C#\WPF-Chat\Server\Server\obj\Debug\net5.0\Server.genruntimeconfig.cache
-C:\Users\termi\source\repos\C#\WPF-Chat\Server\Server\obj\Debug\net5.0\Server.csproj.AssemblyReference.cache
