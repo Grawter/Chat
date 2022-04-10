@@ -67,7 +67,6 @@ namespace Server
                 byte[] buffer, mess;
                 int bytesReceive;
 
-                System.Collections.Generic.List<byte> ll = new();
                 while (_userHandle.Connected)
                 {                  
                     buffer = new byte[32768];
