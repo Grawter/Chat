@@ -4,15 +4,15 @@
 winexe
 C#
 .cs
-C:\Users\termi\source\repos\WPF-Chat\Client\Client\obj\Release\net5.0-windows\
+C:\Users\termi\Source\Repos\WPF-Chat\Client\Client\obj\Release\net5.0-windows\
 Client
 none
 false
 TRACE;RELEASE;NET;NET5_0;NETCOREAPP
-C:\Users\termi\source\repos\WPF-Chat\Client\Client\App.xaml
+C:\Users\termi\Source\Repos\WPF-Chat\Client\Client\App.xaml
 51508888197
 
-22-1475283863
+24-1963563739
 197-573480662
 VIew\AddingWindow.xaml;VIew\AuthWindow.xaml;VIew\ChatWindow.xaml;VIew\KeySetWindow.xaml;VIew\RegWindow.xaml;
 

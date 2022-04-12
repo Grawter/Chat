@@ -77,7 +77,7 @@ namespace Client {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Client_10qs2b5q_wpftmp;component/view/authwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Client;component/view/authwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\VIew\AuthWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
